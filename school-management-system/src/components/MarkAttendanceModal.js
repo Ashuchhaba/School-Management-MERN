@@ -16,7 +16,7 @@ function MarkAttendanceModal({ onClose }) {
   const fetchStaff = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/staff');
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/staff`);
       setStaffList(res.data);
       // Initialize attendance data
       const initialData = {};
@@ -58,7 +58,7 @@ function MarkAttendanceModal({ onClose }) {
 
     setIsSavingAttendance(true); // Set saving state to true
     try {
-      await axios.post('http://localhost:5000/api/salaries/bulk-attendance', {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/salaries/bulk-attendance`, {
         attendance_date: attendanceDate,
         records,
       });

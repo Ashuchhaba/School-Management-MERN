@@ -22,7 +22,7 @@ function StudentDetailsPage() {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/students');
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/students`);
       setStudents(res.data);
     } catch (err) {
       console.error(err);
@@ -33,7 +33,7 @@ function StudentDetailsPage() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/students/${id}`);
+        await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/students/${id}`);
         alert('Student deleted successfully!');
         fetchStudents(); // Refresh the list
       } catch (err) {
@@ -55,7 +55,7 @@ function StudentDetailsPage() {
 
   const handleUpdateStudent = async (updatedStudent) => {
     try {
-      const res = await axios.put(`http://localhost:5000/api/students/${updatedStudent._id}`, updatedStudent);
+      const res = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/students/${updatedStudent._id}`, updatedStudent);
       console.log(res.data);
       alert('Student updated successfully!');
       fetchStudents(); // Refresh the list

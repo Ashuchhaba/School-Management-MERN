@@ -30,8 +30,8 @@ function StaffPaymentPage() {
     setLoadingStats(true);
     setLoadingSalaries(true);
     try {
-      const statsPromise = axios.get(`http://localhost:5000/api/salaries/stats?month=${filters.month}`);
-      const salariesPromise = axios.get(`http://localhost:5000/api/salaries?month=${filters.month}&search=${filters.search}`);
+      const statsPromise = axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/salaries/stats?month=${filters.month}`);
+      const salariesPromise = axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/salaries?month=${filters.month}&search=${filters.search}`);
       
       const [statsRes, salariesRes] = await Promise.all([statsPromise, salariesPromise]);
       
@@ -82,7 +82,7 @@ function StaffPaymentPage() {
       return;
     }
     try {
-      const res = await axios.post('http://localhost:5000/api/salaries/calculate-all', { month: filters.month });
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/salaries/calculate-all`, { month: filters.month });
       alert(`Salaries calculated successfully for ${res.data.count} staff members.`);
       fetchSalaryData(); // Refetch all data
     } catch (err) {
@@ -99,7 +99,7 @@ function StaffPaymentPage() {
   const handleDeleteSalary = async (id) => {
     if (window.confirm('Are you sure you want to delete this salary payment record?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/salaries/${id}`);
+        await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/salaries/${id}`);
         alert('Salary record deleted successfully!');
         fetchSalaryData(); // Refetch all data
       } catch (err) {

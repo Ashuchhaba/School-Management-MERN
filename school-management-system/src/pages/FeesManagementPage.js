@@ -38,7 +38,7 @@ function FeesManagementPage() {
 
   const fetchFees = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/fees');
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/fees`);
       setFees(res.data);
     } catch (err) {
       console.error(err);
@@ -48,7 +48,7 @@ function FeesManagementPage() {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/students');
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/students`);
       setStudents(res.data);
     } catch (err) {
       console.error(err);
@@ -58,7 +58,7 @@ function FeesManagementPage() {
 
   const fetchFeeStructures = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/fees/structure');
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/fees/structure`);
       setFeeStructures(res.data);
     } catch (err) {
       console.error(err);
@@ -89,7 +89,7 @@ function FeesManagementPage() {
   const handleUpdatePayment = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/fees', paymentData);
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/fees`, paymentData);
       console.log(res.data);
       alert('Payment updated successfully!');
       fetchFees(); // Refresh the list
@@ -111,7 +111,7 @@ function FeesManagementPage() {
   const handleAddFeeStructure = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/fees/structure', feeStructureData);
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/fees/structure`, feeStructureData);
       console.log(res.data);
       alert('Fee structure added successfully!');
       fetchFeeStructures(); // Refresh the list
@@ -131,7 +131,7 @@ function FeesManagementPage() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this fee record?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/fees/${id}`);
+        await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/fees/${id}`);
         alert('Fee record deleted successfully!');
         fetchFees(); // Refresh the list
       } catch (err) {
