@@ -1,0 +1,109 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Simple validation (in real application, this would be server-side)
+    if (username === 'admin' && password === 'admin123') {
+      // Redirect to dashboard
+      navigate('/dashboard');
+    } else {
+      alert('Invalid credentials. Use admin/admin123 for demo.');
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  return (
+    <div className="login-body">
+      <div className="login-container">
+        <div className="container">
+          <div className="row justify-content-center align-items-center min-vh-100">
+            <div className="col-md-6 col-lg-5">
+              <div className="login-card">
+                <div className="login-header text-center mb-4">
+                  <div className="school-logo mb-3">
+                    <i className="fas fa-graduation-cap text-primary" style={{ fontSize: '3rem' }}></i>
+                  </div>
+                  <h2 className="text-primary fw-bold">SATYAM STARS</h2>
+                  <p className="text-muted">International School</p>
+                  <h4 className="mt-3">Admin Portal</h4>
+                </div>
+
+                <form onSubmit={handleLogin} className="login-form">
+                  <div className="mb-3">
+                    <label htmlFor="username" className="form-label">
+                      <i className="fas fa-user me-2"></i>Username
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="username"
+                      name="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="password" className="form-label">
+                      <i className="fas fa-lock me-2"></i>Password
+                    </label>
+                    <div className="input-group">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        className="form-control"
+                        id="password"
+                        name="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <button className="btn btn-outline-secondary" type="button" onClick={togglePasswordVisibility}>
+                        <i className={showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'}></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mb-3 form-check">
+                    <input type="checkbox" className="form-check-input" id="rememberMe" />
+                    <label className="form-check-label" htmlFor="rememberMe">
+                      Remember me
+                    </label>
+                  </div>
+
+                  <button type="submit" className="btn btn-primary w-100 mb-3">
+                    <i className="fas fa-sign-in-alt me-2"></i>Login
+                  </button>
+
+                  <div className="text-center">
+                    <a href="/" className="text-muted">Forgot Password?</a>
+                  </div>
+                </form>
+
+                <div className="login-footer text-center mt-4">
+                  <small className="text-muted">
+                    <Link to="/" className="text-decoration-none">
+                      <i className="fas fa-arrow-left me-1"></i>Back to Website
+                    </Link>
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default LoginPage;
