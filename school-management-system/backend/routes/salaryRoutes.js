@@ -216,13 +216,18 @@ router.put('/:id', async (req, res) => {
     await salary.save();
 
     if (paid_on) {
+      console.log(`Processing activity for salary ID: ${salary._id}`);
       const staff = await Staff.findById(salary.staff_id);
-      const activity = new Activity({
-        title: 'Staff salary processed',
-        description: `${staff.name} - ₹${salary.calculated_salary}`,
-        category: 'staff',
-      });
-      await activity.save();
+      if (staff) {
+        const activity = new Activity({
+          title: 'Staff salary processed',
+          description: `${staff.name} - ₹${salary.calculated_salary}`,
+          category: 'staff',
+        });
+        await activity.save();
+      } else {
+        console.error(`Could not find staff with ID: ${salary.staff_id} when creating activity log.`);
+      }
     }
 
     const populatedSalary = await salary.populate('staff_id', 'name designation salary');

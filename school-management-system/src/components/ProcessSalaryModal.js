@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Portal from './Portal';
 
 function ProcessSalaryModal({ salary, onClose }) {
   const [formData, setFormData] = useState({
@@ -37,11 +38,11 @@ function ProcessSalaryModal({ salary, onClose }) {
     };
 
     try {
-      if (salary.paid_on) { // If it has a paid_on date, we're updating
-        await axios.put(`http://localhost:5000/api/salaries/${salary._id}`, paymentData);
+      if (salary._id) { // If it has an _id, we're updating
+        await axios.put(`/api/salaries/${salary._id}`, paymentData);
         alert('Salary payment updated successfully!');
       } else { // Otherwise, we're processing a new payment
-        await axios.post(`http://localhost:5000/api/salaries/process`, paymentData);
+        await axios.post(`/api/salaries`, paymentData);
         alert('Salary payment processed successfully!');
       }
       onClose();
@@ -54,79 +55,80 @@ function ProcessSalaryModal({ salary, onClose }) {
   };
 
   return (
-    <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
-      <div className="modal-dialog">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title"><i className="fas fa-calculator me-2"></i>Process Salary Payment</h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
+    <Portal>
+      <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title"><i className="fas fa-calculator me-2"></i>Process Salary Payment</h5>
+              <button type="button" className="btn-close" onClick={onClose}></button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Staff Member:</label>
+                  <p className="form-control-static fw-bold">{salary.staff_id?.name}</p>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Month:</label>
+                  <p className="form-control-static fw-bold">{new Date(salary.payment_month).toLocaleString('en-US', { year: 'numeric', month: 'long' })}</p>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Base Salary:</label>
+                  <p className="form-control-static">₹{salary.staff_id?.salary?.toLocaleString('en-IN')}</p>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Days Present:</label>
+                  <p className="form-control-static">{`${salary.total_days_present} / ${salary.total_days_in_month}`}</p>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="calculated_salary" className="form-label">Calculated Salary (₹):</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="form-control"
+                    id="calculated_salary"
+                    name="calculated_salary"
+                    value={formData.calculated_salary}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="paid_on" className="form-label">Paid On Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    id="paid_on"
+                    name="paid_on"
+                    value={formData.paid_on}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="notes" className="form-label">Notes</label>
+                  <textarea
+                    className="form-control"
+                    id="notes"
+                    name="notes"
+                    rows="3"
+                    value={formData.notes}
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? 'Processing...' : (salary.paid_on ? 'Update Payment' : 'Process Payment')}
+                </button>
+              </div>
+            </form>
           </div>
-          <form onSubmit={handleSubmit}>
-            <div className="modal-body">
-              <div className="mb-3">
-                <label className="form-label">Staff Member:</label>
-                <p className="form-control-static fw-bold">{salary.staff_id?.name}</p>
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Month:</label>
-                <p className="form-control-static fw-bold">{new Date(salary.payment_month).toLocaleString('en-US', { year: 'numeric', month: 'long' })}</p>
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Base Salary:</label>
-                <p className="form-control-static">₹{salary.staff_id?.salary?.toLocaleString('en-IN')}</p>
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Days Present:</label>
-                <p className="form-control-static">{`${salary.total_days_present} / ${salary.total_days_in_month}`}</p>
-              </div>
-              <div className="mb-3">
-                <label htmlFor="calculated_salary" className="form-label">Calculated Salary (₹):</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  className="form-control"
-                  id="calculated_salary"
-                  name="calculated_salary"
-                  value={formData.calculated_salary}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="paid_on" className="form-label">Paid On Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="paid_on"
-                  name="paid_on"
-                  value={formData.paid_on}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="notes" className="form-label">Notes</label>
-                <textarea
-                  className="form-control"
-                  id="notes"
-                  name="notes"
-                  rows="3"
-                  value={formData.notes}
-                  onChange={handleChange}
-                ></textarea>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-              <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? 'Processing...' : (salary.paid_on ? 'Update Payment' : 'Process Payment')}
-              </button>
-            </div>
-          </form>
         </div>
       </div>
-      <div className="modal-backdrop fade show"></div>
-    </div>
+    </Portal>
   );
 }
 
