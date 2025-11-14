@@ -1,5 +1,6 @@
 const Student = require('../models/studentModel');
 const Admissions = require('../models/admissionsModel');
+const Activity = require('../models/activityModel');
 
 // @desc    Get all students
 // @route   GET /api/students
@@ -153,6 +154,14 @@ const approveAdmission = async (req, res) => {
 
     admission.status = 'Approved';
     await admission.save();
+
+    const newActivity = new Activity({
+      title: 'New student admission',
+      description: `${newStudent.name} - Grade ${newStudent.class}`,
+      category: 'student',
+    });
+    await newActivity.save();
+    console.log('New student activity created:', newActivity);
 
     res.json({ msg: 'Admission approved and student created successfully' });
   } catch (err) {

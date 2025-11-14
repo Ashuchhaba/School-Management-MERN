@@ -66,12 +66,9 @@ router.post('/', async (req, res) => {
     const staff = await newStaff.save();
 
     const activity = new Activity({
-      type: 'staff',
-      action: 'created',
-      data: {
-        name: staff.name,
-        role: staff.designation,
-      },
+      title: 'New staff added',
+      description: staff.name,
+      category: 'staff',
     });
     await activity.save();
 

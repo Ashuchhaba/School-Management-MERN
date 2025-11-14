@@ -4,6 +4,7 @@ const Salary = require('../models/salaryModel');
 const Staff = require('../models/staffModel');
 const Attendance = require('../models/attendanceModel'); // Assuming you have this model
 const mongoose = require('mongoose');
+const Activity = require('../models/activityModel');
 
 // @route   GET api/salaries
 // @desc    Get all salaries with filtering
@@ -213,6 +214,17 @@ router.put('/:id', async (req, res) => {
     salary.notes = notes ?? salary.notes;
 
     await salary.save();
+
+    if (paid_on) {
+      const staff = await Staff.findById(salary.staff_id);
+      const activity = new Activity({
+        title: 'Staff salary processed',
+        description: `${staff.name} - ₹${salary.calculated_salary}`,
+        category: 'staff',
+      });
+      await activity.save();
+    }
+
     const populatedSalary = await salary.populate('staff_id', 'name designation salary');
     res.json(populatedSalary);
   } catch (err) {

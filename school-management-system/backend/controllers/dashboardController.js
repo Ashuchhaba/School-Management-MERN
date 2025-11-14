@@ -87,7 +87,7 @@ const getClassDistribution = async (req, res) => {
 // @access  Public
 const getRecentActivities = async (req, res) => {
   try {
-    const activities = await Activity.find().sort({ createdAt: -1 }).limit(5);
+    const activities = await Activity.find().sort({ timestamp: -1 }).limit(4);
     res.json(activities);
   } catch (error) {
     console.error(error);

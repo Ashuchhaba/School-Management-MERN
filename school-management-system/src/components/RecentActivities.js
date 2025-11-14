@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './RecentActivities.css';
 
 function RecentActivities() {
   const [activities, setActivities] = useState([]);
@@ -10,6 +11,7 @@ function RecentActivities() {
   }, []);
 
   const fetchRecentActivities = async () => {
+    setLoading(true);
     try {
       const res = await axios.get('http://localhost:5000/api/dashboard/recent-activities');
       setActivities(res.data);
@@ -21,20 +23,46 @@ function RecentActivities() {
   };
 
   const iconMap = {
-    'New Admission': { icon: 'fa-user-plus', color: 'bg-success' },
-    'Fee Payment': { icon: 'fa-money-bill', color: 'bg-warning' },
-    'Staff Salary': { icon: 'fa-user-tie', color: 'bg-info' },
-    'New Event': { icon: 'fa-calendar', color: 'bg-primary' },
-    default: { icon: 'fa-info-circle', color: 'bg-secondary' },
+    student: { icon: 'fa-user-plus', color: 'bg-success' },
+    fee: { icon: 'fa-money-bill', color: 'bg-warning' },
+    staff: { icon: 'fa-user-tie', color: 'bg-info' },
+  };
+
+  const timeSince = (date) => {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) {
+      return Math.floor(interval) + " years ago";
+    }
+    interval = seconds / 2592000;
+    if (interval > 1) {
+      return Math.floor(interval) + " months ago";
+    }
+    interval = seconds / 86400;
+    if (interval > 1) {
+      return Math.floor(interval) + " days ago";
+    }
+    interval = seconds / 3600;
+    if (interval > 1) {
+      return Math.floor(interval) + " hours ago";
+    }
+    interval = seconds / 60;
+    if (interval > 1) {
+      return Math.floor(interval) + " minutes ago";
+    }
+    return Math.floor(seconds) + " seconds ago";
   };
 
   return (
     <div className="card h-100">
-      <div className="card-header">
-        <h5 className="card-title">
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h5 className="card-title mb-0">
           <i className="fas fa-clock text-info me-2"></i>
           Recent Activities
         </h5>
+        <button className="btn btn-sm btn-outline-secondary" onClick={fetchRecentActivities}>
+          <i className="fas fa-sync-alt"></i>
+        </button>
       </div>
       <div className="card-body">
         {loading ? (
@@ -42,14 +70,14 @@ function RecentActivities() {
         ) : activities.length > 0 ? (
           activities.map(activity => (
             <div className="activity-item mb-3" key={activity._id}>
-              <div className={`activity-icon ${iconMap[activity.type]?.color || iconMap.default.color}`}>
-                <i className={`fas ${iconMap[activity.type]?.icon || iconMap.default.icon}`}></i>
+              <div className={`activity-icon ${iconMap[activity.category]?.color}`}>
+                <i className={`fas ${iconMap[activity.category]?.icon}`}></i>
               </div>
               <div className="activity-content">
-                <p className="mb-1"><strong>{activity.type}</strong></p>
+                <p className="mb-1"><strong>{activity.title}</strong></p>
                 <small className="text-muted">{activity.description}</small>
                 <br />
-                <small className="text-muted">{new Date(activity.createdAt).toLocaleString()}</small>
+                <small className="text-muted">{timeSince(activity.timestamp)}</small>
               </div>
             </div>
           ))

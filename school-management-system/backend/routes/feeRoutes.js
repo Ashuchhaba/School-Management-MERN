@@ -128,12 +128,9 @@ router.post('/', async (req, res) => {
     // 3. Log this action
     const studentInfo = await Student.findById(student_id);
     const activity = new Activity({
-      type: 'fee',
-      action: 'created', // Keeping as 'created' for simplicity, represents a payment event
-      data: {
-        name: studentInfo.name,
-        amount: new_paid_amount, // Log the amount that was just paid
-      },
+      title: 'Fee payment received',
+      description: `${studentInfo.name} - ₹${new_paid_amount}`,
+      category: 'fee',
     });
     await activity.save();
 
