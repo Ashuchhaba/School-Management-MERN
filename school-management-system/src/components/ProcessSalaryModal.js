@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import Portal from './Portal';
 
 function ProcessSalaryModal({ salary, onClose }) {
@@ -39,10 +39,10 @@ function ProcessSalaryModal({ salary, onClose }) {
 
     try {
       if (salary._id) { // If it has an _id, we're updating
-        await axios.put(`/api/salaries/${salary._id}`, paymentData);
+        await api.put(`/api/salaries/${salary._id}`, paymentData);
         alert('Salary payment updated successfully!');
       } else { // Otherwise, we're processing a new payment
-        await axios.post(`/api/salaries`, paymentData);
+        await api.post(`/api/salaries`, paymentData);
         alert('Salary payment processed successfully!');
       }
       onClose();

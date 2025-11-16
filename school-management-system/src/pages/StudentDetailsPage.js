@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
 import ViewStudentModal from '../components/ViewStudentModal';
@@ -39,7 +39,7 @@ function StudentDetailsPage() {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/students');
+      const res = await api.get('/api/students');
       setStudents(res.data);
     } catch (err) {
       console.error(err);
@@ -54,7 +54,7 @@ function StudentDetailsPage() {
   const handleAddStudent = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/students', newStudentData);
+      const res = await api.post('/api/students', newStudentData);
       console.log(res.data);
       alert('Student added successfully!');
       fetchStudents(); // Refresh the list
@@ -90,7 +90,7 @@ function StudentDetailsPage() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/students/${id}`);
+        await api.delete(`/api/students/${id}`);
         alert('Student deleted successfully!');
         fetchStudents(); // Refresh the list
       } catch (err) {
@@ -112,7 +112,7 @@ function StudentDetailsPage() {
 
   const handleUpdateStudent = async (updatedStudent) => {
     try {
-      const res = await axios.put(`http://localhost:5000/api/students/${updatedStudent._id}`, updatedStudent);
+      const res = await api.put(`/api/students/${updatedStudent._id}`, updatedStudent);
       console.log(res.data);
       alert('Student updated successfully!');
       fetchStudents(); // Refresh the list

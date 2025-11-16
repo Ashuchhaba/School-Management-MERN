@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
 import ViewStaffModal from '../components/ViewStaffModal';
@@ -35,7 +35,7 @@ function StaffDetailsPage() {
 
   const fetchStaff = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/staff');
+      const res = await api.get('/api/staff');
       setStaff(res.data);
     } catch (err) {
       console.error(err);
@@ -50,7 +50,7 @@ function StaffDetailsPage() {
   const handleAddStaff = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/staff', newStaffData);
+      const res = await api.post('/api/staff', newStaffData);
       console.log(res.data);
       alert('Staff member added successfully!');
       fetchStaff(); // Refresh the list
@@ -80,7 +80,7 @@ function StaffDetailsPage() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this staff member?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/staff/${id}`);
+        await api.delete(`/api/staff/${id}`);
         alert('Staff member deleted successfully!');
         fetchStaff(); // Refresh the list
       } catch (err) {
@@ -107,7 +107,7 @@ function StaffDetailsPage() {
 
   const handleUpdateStaff = async (updatedStaff) => {
     try {
-      const res = await axios.put(`http://localhost:5000/api/staff/${updatedStaff._id}`, updatedStaff);
+      const res = await api.put(`/api/staff/${updatedStaff._id}`, updatedStaff);
       console.log(res.data);
       alert('Staff member updated successfully!');
       fetchStaff(); // Refresh the list

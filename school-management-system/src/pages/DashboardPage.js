@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
 import StatCard from '../components/StatCard';
@@ -22,7 +22,7 @@ function DashboardPage() {
 
   const fetchDashboardStats = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/dashboard/stats');
+      const res = await api.get('/api/dashboard/stats');
       setStats(res.data);
     } catch (err) {
       console.error('Error fetching dashboard stats:', err);

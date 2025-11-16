@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import Portal from './Portal';
 
 function MarkAttendanceModal({ onClose }) {
@@ -16,7 +16,7 @@ function MarkAttendanceModal({ onClose }) {
   const fetchStaff = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/staff');
+      const res = await api.get('/api/staff');
       setStaffList(res.data);
       // Initialize attendance data
       const initialData = {};
@@ -58,7 +58,7 @@ function MarkAttendanceModal({ onClose }) {
 
     setIsSavingAttendance(true); // Set saving state to true
     try {
-      await axios.post('http://localhost:5000/api/salaries/bulk-attendance', {
+      await api.post('/api/salaries/bulk-attendance', {
         attendance_date: attendanceDate,
         records,
       });

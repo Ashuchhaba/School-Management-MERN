@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import './RecentActivities.css';
 
 function RecentActivities() {
@@ -13,7 +13,7 @@ function RecentActivities() {
   const fetchRecentActivities = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/dashboard/recent-activities');
+      const res = await api.get('/api/dashboard/recent-activities');
       setActivities(res.data);
     } catch (err) {
       console.error('Error fetching recent activities:', err);
