@@ -13,7 +13,7 @@ function RecentActivities() {
   const fetchRecentActivities = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard/recent-activities`);
+      const res = await axios.get('http://localhost:5000/api/dashboard/recent-activities');
       setActivities(res.data);
     } catch (err) {
       console.error('Error fetching recent activities:', err);

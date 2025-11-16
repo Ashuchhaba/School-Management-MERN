@@ -51,7 +51,7 @@ function AdmissionsPage() {
 
   const fetchAdmissions = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admissions`);
+      const res = await axios.get('http://localhost:5000/api/admissions');
       setAdmissions(res.data);
     } catch (err) {
       console.error(err);
@@ -111,10 +111,10 @@ function AdmissionsPage() {
     e.preventDefault();
     try {
       if (isEdit) {
-        await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/admissions/${formData._id}`, formData);
+        await axios.put(`http://localhost:5000/api/admissions/${formData._id}`, formData);
         alert('Admission application updated successfully!');
       } else {
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/admissions`, { ...formData, status: 'Pending' });
+        await axios.post('http://localhost:5000/api/admissions', { ...formData, status: 'Pending' });
         alert('Admission application submitted successfully!');
       }
       fetchAdmissions();
@@ -128,7 +128,7 @@ function AdmissionsPage() {
   const handleApprove = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/students/approve`, approveFormData);
+      await axios.post('http://localhost:5000/api/students/approve', approveFormData);
       alert('Admission approved and student created successfully!');
       fetchAdmissions();
       handleCloseApproveModal();
@@ -141,7 +141,7 @@ function AdmissionsPage() {
   const handleReject = async (id) => {
     if (window.confirm('Are you sure you want to reject this admission application?')) {
       try {
-        await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/admissions/${id}`, { status: 'Rejected' });
+        await axios.put(`http://localhost:5000/api/admissions/${id}`, { status: 'Rejected' });
         alert('Admission rejected successfully!');
         fetchAdmissions();
       } catch (err) {
@@ -154,7 +154,7 @@ function AdmissionsPage() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this admission application? This action cannot be undone.')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/admissions/${id}`);
+        await axios.delete(`http://localhost:5000/api/admissions/${id}`);
         alert('Admission application deleted successfully!');
         fetchAdmissions();
       } catch (err) {

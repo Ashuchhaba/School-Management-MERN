@@ -29,7 +29,7 @@ function ClassStats() {
 
   const fetchClassDistribution = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard/class-distribution`);
+      const res = await axios.get('http://localhost:5000/api/dashboard/class-distribution');
       const data = res.data;
 
       const chartLabels = data.map(item => item._id);

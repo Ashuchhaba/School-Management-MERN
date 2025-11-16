@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
-import { Link } from 'react-router-dom';
-
 import ViewStudentModal from '../components/ViewStudentModal';
 import EditStudentModal from '../components/EditStudentModal';
 
@@ -16,13 +14,32 @@ function StudentDetailsPage() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  const [newStudentData, setNewStudentData] = useState({
+    gr_no: '',
+    udise_no: '',
+    pan_no: '',
+    name: '',
+    dob: '',
+    gender: '',
+    religion: '',
+    caste: '',
+    date_of_join: '',
+    class: '',
+    roll_no: '',
+    father_name: '',
+    mother_name: '',
+    mobile_no1: '',
+    mobile_no2: '',
+    address: '',
+  });
+
   useEffect(() => {
     fetchStudents();
   }, []);
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/students`);
+      const res = await axios.get('http://localhost:5000/api/students');
       setStudents(res.data);
     } catch (err) {
       console.error(err);
@@ -30,10 +47,50 @@ function StudentDetailsPage() {
     }
   };
 
+  const handleNewStudentChange = (e) => {
+    setNewStudentData({ ...newStudentData, [e.target.name]: e.target.value });
+  };
+
+  const handleAddStudent = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('http://localhost:5000/api/students', newStudentData);
+      console.log(res.data);
+      alert('Student added successfully!');
+      fetchStudents(); // Refresh the list
+      // Close modal - Bootstrap modals can be closed programmatically
+      // For now, we'll just reset the form
+      setNewStudentData({
+        gr_no: '',
+        udise_no: '',
+        pan_no: '',
+        name: '',
+        dob: '',
+        gender: '',
+        religion: '',
+        caste: '',
+        date_of_join: '',
+        class: '',
+        roll_no: '',
+        father_name: '',
+        mother_name: '',
+        mobile_no1: '',
+        mobile_no2: '',
+        address: '',
+      });
+      const modal = document.getElementById('addStudentModal');
+      const modalInstance = window.bootstrap.Modal.getInstance(modal);
+      modalInstance.hide();
+    } catch (err) {
+      console.error(err.response.data);
+      alert('Error adding student. Please check the console for details.');
+    }
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/students/${id}`);
+        await axios.delete(`http://localhost:5000/api/students/${id}`);
         alert('Student deleted successfully!');
         fetchStudents(); // Refresh the list
       } catch (err) {
@@ -55,7 +112,7 @@ function StudentDetailsPage() {
 
   const handleUpdateStudent = async (updatedStudent) => {
     try {
-      const res = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/students/${updatedStudent._id}`, updatedStudent);
+      const res = await axios.put(`http://localhost:5000/api/students/${updatedStudent._id}`, updatedStudent);
       console.log(res.data);
       alert('Student updated successfully!');
       fetchStudents(); // Refresh the list
@@ -96,9 +153,9 @@ function StudentDetailsPage() {
                 <i className="fas fa-user-graduate text-primary me-2"></i>
                 All Students
               </h5>
-              <Link to="/admissions" state={{ openModal: true }} className="btn btn-primary btn-sm">
+              <button className="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                 <i className="fas fa-plus me-2"></i>Add New Student
-              </Link>
+              </button>
             </div>
             <div className="card-body">
               <div className="search-filter-bar mb-3">
@@ -199,6 +256,152 @@ function StudentDetailsPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Add Student Modal */}
+      <div className="modal fade" id="addStudentModal" tabIndex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="addStudentModalLabel">Add New Student</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleAddStudent}>
+                <div className="row">
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label">GR Number</label>
+                      <input type="text" className="form-control" name="gr_no" value={newStudentData.gr_no} onChange={handleNewStudentChange} />
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label">UDISE Number</label>
+                      <input type="text" className="form-control" name="udise_no" value={newStudentData.udise_no} onChange={handleNewStudentChange} />
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label">PAN Number</label>
+                      <input type="text" className="form-control" name="pan_no" value={newStudentData.pan_no} onChange={handleNewStudentChange} />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label">Student Name *</label>
+                      <input type="text" className="form-control" name="name" value={newStudentData.name} onChange={handleNewStudentChange} required />
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label">Date of Birth *</label>
+                      <input type="date" className="form-control" name="dob" value={newStudentData.dob} onChange={handleNewStudentChange} required />
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label">Gender *</label>
+                      <select className="form-select" name="gender" value={newStudentData.gender} onChange={handleNewStudentChange} required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label">Religion</label>
+                      <input type="text" className="form-control" name="religion" value={newStudentData.religion} onChange={handleNewStudentChange} />
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label">Caste</label>
+                      <input type="text" className="form-control" name="caste" value={newStudentData.caste} onChange={handleNewStudentChange} />
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label">Date of Join *</label>
+                      <input type="date" className="form-control" name="date_of_join" value={newStudentData.date_of_join} onChange={handleNewStudentChange} required />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">Class *</label>
+                      <select className="form-select" name="class" value={newStudentData.class} onChange={handleNewStudentChange} required>
+                        <option value="">Select Class</option>
+                        <option value="Nursery">Nursery</option>
+                        <option value="LKG">LKG</option>
+                        <option value="UKG">UKG</option>
+                        <option value="1st">1st</option>
+                        <option value="2nd">2nd</option>
+                        <option value="3rd">3rd</option>
+                        <option value="4th">4th</option>
+                        <option value="5th">5th</option>
+                        <option value="6th">6th</option>
+                        <option value="7th">7th</option>
+                        <option value="8th">8th</option>
+                        <option value="9th">9th</option>
+                        <option value="10th">10th</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">Roll Number *</label>
+                      <input type="text" className="form-control" name="roll_no" value={newStudentData.roll_no} onChange={handleNewStudentChange} required />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">Father's Name *</label>
+                      <input type="text" className="form-control" name="father_name" value={newStudentData.father_name} onChange={handleNewStudentChange} required />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">Mother's Name *</label>
+                      <input type="text" className="form-control" name="mother_name" value={newStudentData.mother_name} onChange={handleNewStudentChange} required />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">Mobile Number 1 *</label>
+                      <input type="text" className="form-control" name="mobile_no1" value={newStudentData.mobile_no1} onChange={handleNewStudentChange} required />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">Mobile Number 2</label>
+                      <input type="text" className="form-control" name="mobile_no2" value={newStudentData.mobile_no2} onChange={handleNewStudentChange} />
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Address *</label>
+                  <textarea className="form-control" rows="3" name="address" value={newStudentData.address} onChange={handleNewStudentChange} required></textarea>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" className="btn btn-primary">Save Student</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

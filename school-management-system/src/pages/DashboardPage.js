@@ -22,7 +22,7 @@ function DashboardPage() {
 
   const fetchDashboardStats = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard/stats`);
+      const res = await axios.get('http://localhost:5000/api/dashboard/stats');
       setStats(res.data);
     } catch (err) {
       console.error('Error fetching dashboard stats:', err);
