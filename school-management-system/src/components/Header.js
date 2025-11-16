@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import schoolLogo from '../assets/School Logo.png';
 
 function Header() {
@@ -37,9 +38,9 @@ function Header() {
               <a className="nav-link" href="#contact">Contact</a>
             </li>
           </ul>
-          <a href="/login" className="btn btn-primary">
+          <Link to="/login" className="btn btn-primary">
             <i className="fas fa-user-shield me-2"></i>Admin Login
-          </a>
+          </Link>
         </div>
       </div>
     </header>
