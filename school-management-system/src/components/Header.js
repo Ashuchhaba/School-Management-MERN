@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import schoolLogo from '../assets/School Logo.png';
+import schoolLogo from '../assets/school-logo.png';
 
 function Header() {
   return (
