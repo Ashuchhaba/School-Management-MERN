@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import Portal from './Portal';
+import { usePopup } from '../contexts/PopupContext';
 
 function ProcessSalaryModal({ salary, onClose }) {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ function ProcessSalaryModal({ salary, onClose }) {
     notes: '',
   });
   const [loading, setLoading] = useState(false);
+  const { showPopup } = usePopup();
 
   useEffect(() => {
     if (salary) {
@@ -40,15 +42,15 @@ function ProcessSalaryModal({ salary, onClose }) {
     try {
       if (salary._id) { // If it has an _id, we're updating
         await api.put(`/api/salaries/${salary._id}`, paymentData);
-        alert('Salary payment updated successfully!');
+        showPopup('Salary payment updated successfully!');
       } else { // Otherwise, we're processing a new payment
         await api.post(`/api/salaries`, paymentData);
-        alert('Salary payment processed successfully!');
+        showPopup('Salary payment processed successfully!');
       }
       onClose();
     } catch (err) {
       console.error('Error processing/updating salary:', err);
-      alert('Operation failed. ' + (err.response?.data?.message || ''));
+      showPopup('Operation failed. ' + (err.response?.data?.message || ''));
     } finally {
       setLoading(false);
     }

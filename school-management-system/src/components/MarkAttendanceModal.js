@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import Portal from './Portal';
+import { usePopup } from '../contexts/PopupContext';
 
 function MarkAttendanceModal({ onClose }) {
   const [staffList, setStaffList] = useState([]);
@@ -8,6 +9,7 @@ function MarkAttendanceModal({ onClose }) {
   const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().slice(0, 10));
   const [attendanceData, setAttendanceData] = useState({});
   const [isSavingAttendance, setIsSavingAttendance] = useState(false);
+  const { showPopup } = usePopup();
 
   useEffect(() => {
     fetchStaff();
@@ -26,7 +28,7 @@ function MarkAttendanceModal({ onClose }) {
       setAttendanceData(initialData);
     } catch (err) {
       console.error('Error fetching staff:', err);
-      alert('Failed to load staff list.');
+      showPopup('Failed to load staff list.');
     } finally {
       setLoading(false);
     }
@@ -52,7 +54,7 @@ function MarkAttendanceModal({ onClose }) {
     }));
 
     if (!attendanceDate || records.length === 0) {
-      alert('Please select a date and ensure staff are loaded.');
+      showPopup('Please select a date and ensure staff are loaded.');
       return;
     }
 
@@ -62,11 +64,11 @@ function MarkAttendanceModal({ onClose }) {
         attendance_date: attendanceDate,
         records,
       });
-      alert('Attendance recorded successfully!');
+      showPopup('Attendance recorded successfully!');
       onClose();
     } catch (err) {
       console.error('Error saving attendance:', err);
-      alert('Failed to save attendance. ' + (err.response?.data?.message || ''));
+      showPopup('Failed to save attendance. ' + (err.response?.data?.message || ''));
     } finally {
       setIsSavingAttendance(false); // Reset saving state to false
     }

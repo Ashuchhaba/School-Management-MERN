@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
 import ViewStaffModal from '../components/ViewStaffModal';
 import EditStaffModal from '../components/EditStaffModal';
+import { usePopup } from '../contexts/PopupContext';
 
 function StaffDetailsPage() {
   const [staff, setStaff] = useState([]);
@@ -12,6 +13,8 @@ function StaffDetailsPage() {
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { showPopup, showConfirm } = usePopup();
+  const [errors, setErrors] = useState({});
 
   const [newStaffData, setNewStaffData] = useState({
     name: '',
@@ -39,20 +42,48 @@ function StaffDetailsPage() {
       setStaff(res.data);
     } catch (err) {
       console.error(err);
-      alert('Error fetching staff. Please check the console for details.');
+      showPopup('Error fetching staff. Please check the console for details.');
     }
   };
 
   const handleNewStaffChange = (e) => {
-    setNewStaffData({ ...newStaffData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setNewStaffData({ ...newStaffData, [name]: value });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
+  };
+
+  const validateStaff = () => {
+    const newErrors = {};
+    if (!newStaffData.name) newErrors.name = '*pls enter detail';
+    if (!newStaffData.dob) newErrors.dob = '*pls enter detail';
+    if (!newStaffData.gender) newErrors.gender = '*pls select detail';
+    if (!newStaffData.qualification) newErrors.qualification = '*pls enter detail';
+    if (!newStaffData.date_of_join) newErrors.date_of_join = '*pls enter detail';
+    if (!newStaffData.mobile_no) newErrors.mobile_no = '*pls enter detail';
+    if (!newStaffData.email) newErrors.email = '*pls enter detail';
+    if (!newStaffData.address) newErrors.address = '*pls enter detail';
+    return newErrors;
   };
 
   const handleAddStaff = async (e) => {
     e.preventDefault();
+    const validationErrors = validateStaff();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
+      const modal = document.getElementById('addStaffModal');
+      const modalInstance = window.bootstrap.Modal.getInstance(modal);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+
       const res = await api.post('/api/staff', newStaffData);
       console.log(res.data);
-      alert('Staff member added successfully!');
+      showPopup('Staff member added successfully!');
       fetchStaff(); // Refresh the list
       // Close modal - Bootstrap modals can be closed programmatically
       // For now, we'll just reset the form
@@ -71,23 +102,24 @@ function StaffDetailsPage() {
         subjects_taught: '',
         salary: '',
       });
+      setErrors({});
     } catch (err) {
       console.error(err.response.data);
-      alert('Error adding staff member. Please check the console for details.');
+      showPopup('Error adding staff member. Please check the console for details.');
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this staff member?')) {
+  const handleDelete = (id) => {
+    showConfirm('Are you sure you want to delete this staff member?', async () => {
       try {
         await api.delete(`/api/staff/${id}`);
-        alert('Staff member deleted successfully!');
+        showPopup('Staff member deleted successfully!');
         fetchStaff(); // Refresh the list
       } catch (err) {
         console.error(err);
-        alert('Error deleting staff member. Please check the console for details.');
+        showPopup('Error deleting staff member. Please check the console for details.');
       }
-    }
+    });
   };
 
   const handleViewDetails = (staffMember) => {
@@ -107,15 +139,15 @@ function StaffDetailsPage() {
 
   const handleUpdateStaff = async (updatedStaff) => {
     try {
+      setIsEditModalOpen(false);
       const res = await api.put(`/api/staff/${updatedStaff._id}`, updatedStaff);
       console.log(res.data);
-      alert('Staff member updated successfully!');
+      showPopup('Staff member updated successfully!');
       fetchStaff(); // Refresh the list
-      setIsEditModalOpen(false);
       setSelectedStaff(null);
     } catch (err) {
       console.error(err.response.data);
-      alert('Error updating staff member. Please check the console for details.');
+      showPopup('Error updating staff member. Please check the console for details.');
     }
   };
 
@@ -248,18 +280,20 @@ function StaffDetailsPage() {
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
-              <form onSubmit={handleAddStaff}>
+              <form onSubmit={handleAddStaff} noValidate>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Name *</label>
-                      <input type="text" className="form-control" name="name" value={newStaffData.name} onChange={handleNewStaffChange} required />
+                      <input type="text" className={`form-control ${errors.name ? 'is-invalid' : ''}`} name="name" value={newStaffData.name} onChange={handleNewStaffChange} />
+                      {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Date of Birth *</label>
-                      <input type="date" className="form-control" name="dob" value={newStaffData.dob} onChange={handleNewStaffChange} required />
+                      <input type="date" className={`form-control ${errors.dob ? 'is-invalid' : ''}`} name="dob" value={newStaffData.dob} onChange={handleNewStaffChange} />
+                      {errors.dob && <div className="invalid-feedback">{errors.dob}</div>}
                     </div>
                   </div>
                 </div>
@@ -267,18 +301,20 @@ function StaffDetailsPage() {
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Gender *</label>
-                      <select className="form-select" name="gender" value={newStaffData.gender} onChange={handleNewStaffChange} required>
+                      <select className={`form-select ${errors.gender ? 'is-invalid' : ''}`} name="gender" value={newStaffData.gender} onChange={handleNewStaffChange}>
                         <option value="">Select Gender</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
                       </select>
+                      {errors.gender && <div className="invalid-feedback">{errors.gender}</div>}
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Qualification *</label>
-                      <input type="text" className="form-control" name="qualification" value={newStaffData.qualification} onChange={handleNewStaffChange} required />
+                      <input type="text" className={`form-control ${errors.qualification ? 'is-invalid' : ''}`} name="qualification" value={newStaffData.qualification} onChange={handleNewStaffChange} />
+                      {errors.qualification && <div className="invalid-feedback">{errors.qualification}</div>}
                     </div>
                   </div>
                 </div>
@@ -292,7 +328,8 @@ function StaffDetailsPage() {
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Date of Join *</label>
-                      <input type="date" className="form-control" name="date_of_join" value={newStaffData.date_of_join} onChange={handleNewStaffChange} required />
+                      <input type="date" className={`form-control ${errors.date_of_join ? 'is-invalid' : ''}`} name="date_of_join" value={newStaffData.date_of_join} onChange={handleNewStaffChange} />
+                      {errors.date_of_join && <div className="invalid-feedback">{errors.date_of_join}</div>}
                     </div>
                   </div>
                 </div>
@@ -300,19 +337,22 @@ function StaffDetailsPage() {
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Mobile No *</label>
-                      <input type="tel" className="form-control" name="mobile_no" value={newStaffData.mobile_no} onChange={handleNewStaffChange} required />
+                      <input type="tel" className={`form-control ${errors.mobile_no ? 'is-invalid' : ''}`} name="mobile_no" value={newStaffData.mobile_no} onChange={handleNewStaffChange} />
+                      {errors.mobile_no && <div className="invalid-feedback">{errors.mobile_no}</div>}
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Email Address *</label>
-                      <input type="email" className="form-control" name="email" value={newStaffData.email} onChange={handleNewStaffChange} required />
+                      <input type="email" className={`form-control ${errors.email ? 'is-invalid' : ''}`} name="email" value={newStaffData.email} onChange={handleNewStaffChange} />
+                      {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                     </div>
                   </div>
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Address *</label>
-                  <textarea className="form-control" rows="3" name="address" value={newStaffData.address} onChange={handleNewStaffChange} required></textarea>
+                  <textarea className={`form-control ${errors.address ? 'is-invalid' : ''}`} rows="3" name="address" value={newStaffData.address} onChange={handleNewStaffChange}></textarea>
+                  {errors.address && <div className="invalid-feedback">{errors.address}</div>}
                 </div>
                 <div className="row">
                   <div className="col-md-6">

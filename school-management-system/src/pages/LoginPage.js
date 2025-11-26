@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { usePopup } from '../contexts/PopupContext';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { showPopup } = usePopup();
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -14,7 +16,7 @@ function LoginPage() {
       // Redirect to dashboard
       navigate('/dashboard');
     } else {
-      alert('Invalid credentials. Use admin/admin123 for demo.');
+      showPopup('Invalid credentials. Use admin/admin123 for demo.');
     }
   };
 

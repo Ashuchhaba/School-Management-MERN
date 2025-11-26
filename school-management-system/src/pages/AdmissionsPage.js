@@ -3,6 +3,7 @@ import api from '../api';
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
 import { useLocation } from 'react-router-dom';
+import { usePopup } from '../contexts/PopupContext';
 
 function AdmissionsPage() {
   const [admissions, setAdmissions] = useState([]);
@@ -17,8 +18,10 @@ function AdmissionsPage() {
     class: '',
     status: '',
   });
+  const [errors, setErrors] = useState({});
 
   const location = useLocation();
+  const { showPopup, showConfirm } = usePopup();
 
   useEffect(() => {
     if (location.state?.openModal) {
@@ -55,7 +58,7 @@ function AdmissionsPage() {
       setAdmissions(res.data);
     } catch (err) {
       console.error(err);
-      alert('Error fetching admissions. Please check the console for details.');
+      showPopup('Error fetching admissions. Please check the console for details.');
     }
   };
 
@@ -76,7 +79,11 @@ function AdmissionsPage() {
   };
 
   const handleApproveFormChange = (e) => {
-    setApproveFormData({ ...approveFormData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setApproveFormData({ ...approveFormData, [name]: value });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
   };
 
   const handleShowModal = (admission = {}) => {
@@ -105,63 +112,79 @@ function AdmissionsPage() {
   const handleCloseApproveModal = () => {
     setShowApproveModal(false);
     setApproveFormData({});
+    setErrors({});
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      handleCloseModal();
       if (isEdit) {
         await api.put(`/api/admissions/${formData._id}`, formData);
-        alert('Admission application updated successfully!');
+        showPopup('Admission application updated successfully!');
       } else {
         await api.post('/api/admissions', { ...formData, status: 'Pending' });
-        alert('Admission application submitted successfully!');
+        showPopup('Admission application submitted successfully!');
       }
       fetchAdmissions();
-      handleCloseModal();
     } catch (err) {
       console.error(err);
-      alert('Error submitting admission application. Please check the console for details.');
+      showPopup('Error submitting admission application. Please check the console for details.');
     }
+  };
+
+  const validateApprove = () => {
+    const newErrors = {};
+    if (!approveFormData.gr_no) newErrors.gr_no = '*pls enter detail';
+    if (!approveFormData.udise_no) newErrors.udise_no = '*pls enter detail';
+    if (!approveFormData.roll_no) newErrors.roll_no = '*pls enter detail';
+    if (!approveFormData.date_of_join) newErrors.date_of_join = '*pls enter detail';
+    return newErrors;
   };
 
   const handleApprove = async (e) => {
     e.preventDefault();
+    const validationErrors = validateApprove();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
-      await api.post('/api/students/approve', approveFormData);
-      alert('Admission approved and student created successfully!');
-      fetchAdmissions();
       handleCloseApproveModal();
+      await api.post('/api/students/approve', approveFormData);
+      showPopup('Admission approved and student created successfully!');
+      fetchAdmissions();
     } catch (err) {
       console.error(err);
-      alert('Error approving admission. Please check the console for details.');
+      showPopup('Error approving admission. Please check the console for details.');
     }
   };
 
-  const handleReject = async (id) => {
-    if (window.confirm('Are you sure you want to reject this admission application?')) {
+  const handleReject = (id) => {
+    showConfirm('Are you sure you want to reject this admission application?', async () => {
       try {
         await api.put(`/api/admissions/${id}`, { status: 'Rejected' });
-        alert('Admission rejected successfully!');
+        showPopup('Admission rejected successfully!');
         fetchAdmissions();
       } catch (err) {
         console.error(err);
-        alert('Error rejecting admission. Please check the console for details.');
+        showPopup('Error rejecting admission. Please check the console for details.');
       }
-    }
+    });
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this admission application? This action cannot be undone.')) {
+  const handleDelete = (id) => {
+    showConfirm('Are you sure you want to delete this admission application? This action cannot be undone.', async () => {
       try {
         await api.delete(`/api/admissions/${id}`);
-        alert('Admission application deleted successfully!');
+        showPopup('Admission application deleted successfully!');
         fetchAdmissions();
       } catch (err) {
         console.error(err);
-        alert('Error deleting admission. Please check the console for details.');
+        showPopup('Error deleting admission. Please check the console for details.');
       }
-    }
+    });
   };
 
   return (
@@ -532,7 +555,7 @@ function AdmissionsPage() {
                 <button type="button" className="btn-close" onClick={handleCloseApproveModal}></button>
               </div>
               <div className="modal-body">
-                <form onSubmit={handleApprove}>
+                <form onSubmit={handleApprove} noValidate>
                   <p>Review the details below and provide the required student identifiers to finalize the admission.</p>
 
                   <div className="row g-3 mb-4">
@@ -553,74 +576,37 @@ function AdmissionsPage() {
                   <h6 className="text-success">Student Record Details</h6>
                   <div className="row g-3">
                     <div className="col-md-4">
-                      <div className="form-floating">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="approveGrNo"
-                          name="gr_no"
-                          placeholder="GR Number"
-                          value={approveFormData.gr_no || ''}
-                          onChange={handleApproveFormChange}
-                        />
-                        <label htmlFor="approveGrNo">GR Number</label>
+                      <div className="mb-3">
+                        <label className="form-label">GR Number *</label>
+                        <input type="text" className={`form-control ${errors.gr_no ? 'is-invalid' : ''}`} id="approveGrNo" name="gr_no" value={approveFormData.gr_no || ''} onChange={handleApproveFormChange} />
+                        {errors.gr_no && <div className="invalid-feedback">{errors.gr_no}</div>}
                       </div>
                     </div>
                     <div className="col-md-4">
-                      <div className="form-floating">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="approveUdiseNo"
-                          name="udise_no"
-                          placeholder="UDISE Number"
-                          value={approveFormData.udise_no || ''}
-                          onChange={handleApproveFormChange}
-                        />
-                        <label htmlFor="approveUdiseNo">UDISE Number</label>
+                      <div className="mb-3">
+                        <label className="form-label">UDISE Number *</label>
+                        <input type="text" className={`form-control ${errors.udise_no ? 'is-invalid' : ''}`} id="approveUdiseNo" name="udise_no" value={approveFormData.udise_no || ''} onChange={handleApproveFormChange} />
+                        {errors.udise_no && <div className="invalid-feedback">{errors.udise_no}</div>}
                       </div>
                     </div>
                     <div className="col-md-4">
-                      <div className="form-floating">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="approvePanNo"
-                          name="pan_no"
-                          placeholder="PAN Number"
-                          value={approveFormData.pan_no || ''}
-                          onChange={handleApproveFormChange}
-                        />
-                        <label htmlFor="approvePanNo">PAN Number</label>
+                      <div className="mb-3">
+                        <label className="form-label">PAN Number</label>
+                        <input type="text" className="form-control" id="approvePanNo" name="pan_no" value={approveFormData.pan_no || ''} onChange={handleApproveFormChange} />
                       </div>
                     </div>
                     <div className="col-md-6">
-                      <div className="form-floating">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="approveRollNo"
-                          name="roll_no"
-                          placeholder="Roll Number"
-                          value={approveFormData.roll_no || ''}
-                          onChange={handleApproveFormChange}
-                          required
-                        />
-                        <label htmlFor="approveRollNo">Roll Number *</label>
+                      <div className="mb-3">
+                        <label className="form-label">Roll Number *</label>
+                        <input type="text" className={`form-control ${errors.roll_no ? 'is-invalid' : ''}`} id="approveRollNo" name="roll_no" value={approveFormData.roll_no || ''} onChange={handleApproveFormChange} />
+                        {errors.roll_no && <div className="invalid-feedback">{errors.roll_no}</div>}
                       </div>
                     </div>
                     <div className="col-md-6">
-                      <div className="form-floating">
-                        <input
-                          type="date"
-                          className="form-control"
-                          id="approveDateOfJoin"
-                          name="date_of_join"
-                          value={approveFormData.date_of_join || ''}
-                          onChange={handleApproveFormChange}
-                          required
-                        />
-                        <label htmlFor="approveDateOfJoin">Date of Join *</label>
+                      <div className="mb-3">
+                        <label className="form-label">Date of Join *</label>
+                        <input type="date" className={`form-control ${errors.date_of_join ? 'is-invalid' : ''}`} id="approveDateOfJoin" name="date_of_join" value={approveFormData.date_of_join || ''} onChange={handleApproveFormChange} />
+                        {errors.date_of_join && <div className="invalid-feedback">{errors.date_of_join}</div>}
                       </div>
                     </div>
                   </div>

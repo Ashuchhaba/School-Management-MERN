@@ -19,15 +19,15 @@ function Sidebar() {
           <i className="fas fa-tachometer-alt"></i>
           Dashboard
         </NavLink>
-        <NavLink to="/fees-management" className="nav-link">
+        <NavLink to="/fees" className="nav-link">
           <i className="fas fa-money-bill-wave"></i>
           Fees Management
         </NavLink>
-        <NavLink to="/staff-details" className="nav-link">
+        <NavLink to="/staff" className="nav-link">
           <i className="fas fa-users"></i>
           Staff Details
         </NavLink>
-        <NavLink to="/student-details" className="nav-link">
+        <NavLink to="/students" className="nav-link">
           <i className="fas fa-user-graduate"></i>
           Student Details
         </NavLink>

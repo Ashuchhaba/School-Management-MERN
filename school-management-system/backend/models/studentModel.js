@@ -3,10 +3,12 @@ const mongoose = require('mongoose');
 const studentSchema = new mongoose.Schema({
   gr_no: {
     type: String,
+    required: true,
     unique: true,
   },
   udise_no: {
     type: String,
+    required: true,
     unique: true,
   },
   pan_no: {

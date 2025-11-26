@@ -60,8 +60,9 @@ router.get('/stats', async (req, res) => {
       payment_month: { $gte: startDate, $lte: endDate }
     });
 
-    const total_salary_due = salariesInMonth.reduce((acc, cur) => acc + cur.calculated_salary, 0);
     const total_paid = salariesInMonth.filter(s => s.paid_on).reduce((acc, cur) => acc + cur.calculated_salary, 0);
+    const unpaid_salaries = salariesInMonth.filter(s => !s.paid_on);
+    const total_salary_due = unpaid_salaries.reduce((acc, cur) => acc + cur.calculated_salary, 0);
     const staff_paid = new Set(salariesInMonth.filter(s => s.paid_on && s.staff_id).map(s => s.staff_id.toString())).size;
 
     // Simplified attendance calculation
@@ -248,6 +249,27 @@ router.delete('/:id', async (req, res) => {
     await Salary.findByIdAndDelete(req.params.id);
 
     res.json({ msg: 'Salary removed' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/salaries/attendance/:staff_id/:month
+// @desc    Get attendance for a specific staff member for a given month
+router.get('/attendance/:staff_id/:month', async (req, res) => {
+  try {
+    const { staff_id, month } = req.params;
+
+    const startDate = new Date(`${month}-01`);
+    const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0, 23, 59, 59);
+
+    const attendance = await Attendance.find({
+      staff_id,
+      attendance_date: { $gte: startDate, $lte: endDate }
+    }).sort({ attendance_date: 1 });
+
+    res.json(attendance);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

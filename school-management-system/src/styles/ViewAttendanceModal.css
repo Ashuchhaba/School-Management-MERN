@@ -1,0 +1,47 @@
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+  
+  .calendar-day {
+    border: 1px solid #eee;
+    padding: 10px;
+    text-align: center;
+    min-height: 80px;
+  }
+  
+  .calendar-day.empty {
+    border: none;
+  }
+  
+  .day-number {
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+  
+  .status {
+    margin-top: 5px;
+    padding: 3px;
+    border-radius: 3px;
+    color: white;
+  }
+  
+  .status.present {
+    background-color: #28a745;
+  }
+  
+  .status.absent {
+    background-color: #dc3545;
+  }
+  
+  .status.leave {
+    background-color: #ffc107;
+    color: black;
+  }
+  
+  .status.not-recorded {
+    background-color: #f8f9fa;
+    color: #6c757d;
+  }
+  

@@ -5,7 +5,9 @@ import AdminHeader from '../components/AdminHeader';
 import StatCard from '../components/StatCard';
 import MarkAttendanceModal from '../components/MarkAttendanceModal';
 import ProcessSalaryModal from '../components/ProcessSalaryModal';
+import ViewAttendanceModal from '../components/ViewAttendanceModal';
 import { debounce } from 'lodash';
+import { usePopup } from '../contexts/PopupContext';
 
 function StaffPaymentPage() {
   const [stats, setStats] = useState({
@@ -24,7 +26,9 @@ function StaffPaymentPage() {
   });
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
   const [showProcessSalaryModal, setShowProcessSalaryModal] = useState(false);
+  const [showViewAttendanceModal, setShowViewAttendanceModal] = useState(false);
   const [selectedSalary, setSelectedSalary] = useState(null);
+  const { showPopup, showConfirm } = usePopup();
 
   const fetchSalaryData = useCallback(async () => {
     setLoadingStats(true);
@@ -39,12 +43,12 @@ function StaffPaymentPage() {
       setSalaries(salariesRes.data);
     } catch (err) {
       console.error('Error fetching salary data:', err);
-      alert('Error fetching salary data.');
+      showPopup('Error fetching salary data.');
     } finally {
       setLoadingStats(false);
       setLoadingSalaries(false);
     }
-  }, [filters.month, filters.search]);
+  }, [filters.month, filters.search, showPopup]);
 
   useEffect(() => {
     fetchSalaryData();
@@ -77,18 +81,17 @@ function StaffPaymentPage() {
     }
   };
 
-  const handleCalculateSalaries = async () => {
-    if (!window.confirm(`Are you sure you want to calculate salaries for all staff for ${filters.month}?`)) {
-      return;
-    }
-    try {
-      const res = await api.post('/api/salaries/calculate-all', { month: filters.month });
-      alert(`Salaries calculated successfully for ${res.data.count} staff members.`);
-      fetchSalaryData(); // Refetch all data
-    } catch (err) {
-      console.error('Error calculating salaries:', err);
-      alert('Error calculating salaries. ' + (err.response?.data?.message || ''));
-    }
+  const handleCalculateSalaries = () => {
+    showConfirm(`Are you sure you want to calculate salaries for all staff for ${filters.month}?`, async () => {
+      try {
+        const res = await api.post('/api/salaries/calculate-all', { month: filters.month });
+        showPopup(`Salaries calculated successfully for ${res.data.count} staff members.`);
+        fetchSalaryData(); // Refetch all data
+      } catch (err) {
+        console.error('Error calculating salaries:', err);
+        showPopup('Error calculating salaries. ' + (err.response?.data?.message || ''));
+      }
+    });
   };
 
   const handleEditSalary = (salary) => {
@@ -96,22 +99,28 @@ function StaffPaymentPage() {
     setShowProcessSalaryModal(true);
   };
 
-  const handleDeleteSalary = async (id) => {
-    if (window.confirm('Are you sure you want to delete this salary payment record?')) {
+  const handleDeleteSalary = (id) => {
+    showConfirm('Are you sure you want to delete this salary payment record?', async () => {
       try {
         await api.delete(`/api/salaries/${id}`);
-        alert('Salary record deleted successfully!');
+        showPopup('Salary record deleted successfully!');
         fetchSalaryData(); // Refetch all data
       } catch (err) {
         console.error(err);
-        alert('Error deleting salary record.');
+        showPopup('Error deleting salary record.');
       }
-    }
+    });
+  };
+
+  const handleViewAttendance = (salary) => {
+    setSelectedSalary(salary);
+    setShowViewAttendanceModal(true);
   };
   
   const handleModalClose = () => {
     setShowAttendanceModal(false);
     setShowProcessSalaryModal(false);
+    setShowViewAttendanceModal(false);
     setSelectedSalary(null);
     fetchSalaryData(); // Refetch all data
   };
@@ -207,7 +216,7 @@ function StaffPaymentPage() {
                           <td>₹{salary.calculated_salary?.toLocaleString('en-IN')}</td>
                           <td>{salary.paid_on ? new Date(salary.paid_on).toLocaleDateString() : 'Pending'}</td>
                           <td>
-                            <button className="btn btn-sm btn-info me-1" title="View Attendance" onClick={() => alert('View attendance functionality to be implemented.')}>
+                            <button className="btn btn-sm btn-info me-1" title="View Attendance" onClick={() => handleViewAttendance(salary)}>
                               <i className="fas fa-calendar-alt"></i>
                             </button>
                             <button className="btn btn-sm btn-warning me-1" title="Edit/Process Payment" onClick={() => handleEditSalary(salary)}>
@@ -232,6 +241,7 @@ function StaffPaymentPage() {
 
       {showAttendanceModal && <MarkAttendanceModal onClose={handleModalClose} />}
       {showProcessSalaryModal && <ProcessSalaryModal salary={selectedSalary} onClose={handleModalClose} />}
+      {showViewAttendanceModal && <ViewAttendanceModal staffId={selectedSalary.staff_id._id} staffName={selectedSalary.staff_id.name} month={filters.month} onClose={handleModalClose} />}
     </div>
   );
 }

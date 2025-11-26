@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api';
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
+import { usePopup } from '../contexts/PopupContext';
 
 function FeesManagementPage() {
   const [fees, setFees] = useState([]);
@@ -10,6 +11,8 @@ function FeesManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterClass, setFilterClass] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const { showPopup, showConfirm } = usePopup();
+  const [errors, setErrors] = useState({});
 
   // State for the new cascading dropdowns
   const [selectedClass, setSelectedClass] = useState('');
@@ -42,7 +45,7 @@ function FeesManagementPage() {
       setFees(res.data);
     } catch (err) {
       console.error(err);
-      alert('Error fetching fees. Please check the console for details.');
+      showPopup('Error fetching fees. Please check the console for details.');
     }
   };
 
@@ -52,7 +55,7 @@ function FeesManagementPage() {
       setStudents(res.data);
     } catch (err) {
       console.error(err);
-      alert('Error fetching students. Please check the console for details.');
+      showPopup('Error fetching students. Please check the console for details.');
     }
   };
 
@@ -62,16 +65,24 @@ function FeesManagementPage() {
       setFeeStructures(res.data);
     } catch (err) {
       console.error(err);
-      alert('Error fetching fee structures. Please check the console for details.');
+      showPopup('Error fetching fee structures. Please check the console for details.');
     }
   };
 
   const handlePaymentChange = (e) => {
-    setPaymentData({ ...paymentData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setPaymentData({ ...paymentData, [name]: value });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
   };
 
   const handleFeeStructureChange = (e) => {
-    setFeeStructureData({ ...feeStructureData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFeeStructureData({ ...feeStructureData, [name]: value });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
   };
 
   // Handler for the new Class dropdown
@@ -86,12 +97,34 @@ function FeesManagementPage() {
     });
   };
 
+  const validatePayment = () => {
+    const newErrors = {};
+    if (!selectedClass) newErrors.class = '*pls select detail';
+    if (!paymentData.student_id) newErrors.student_id = '*pls select detail';
+    if (!paymentData.fee_structure_id) newErrors.fee_structure_id = '*pls select detail';
+    if (!paymentData.payment_date) newErrors.payment_date = '*pls enter detail';
+    if (!paymentData.paid_amount) newErrors.paid_amount = '*pls enter detail';
+    return newErrors;
+  };
+
   const handleUpdatePayment = async (e) => {
     e.preventDefault();
+    const validationErrors = validatePayment();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
+      const modal = document.getElementById('updatePaymentModal');
+      const modalInstance = window.bootstrap.Modal.getInstance(modal);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+
       const res = await api.post('/api/fees', paymentData);
       console.log(res.data);
-      alert('Payment updated successfully!');
+      showPopup('Payment updated successfully!');
       fetchFees(); // Refresh the list
       // Reset form state
       setPaymentData({
@@ -102,18 +135,38 @@ function FeesManagementPage() {
         notes: '',
       });
       setSelectedClass(''); // Reset class dropdown as well
+      setErrors({});
     } catch (err) {
       console.error(err.response ? err.response.data : err.message);
-      alert(`Error updating payment: ${err.response ? err.response.data.msg : err.message}`);
+      showPopup(`Error updating payment: ${err.response ? err.response.data.msg : err.message}`);
     }
+  };
+
+  const validateFeeStructure = () => {
+    const newErrors = {};
+    if (!feeStructureData.class) newErrors.class = '*pls enter detail';
+    if (!feeStructureData.term) newErrors.term = '*pls select detail';
+    if (!feeStructureData.total_amount) newErrors.total_amount = '*pls enter detail';
+    return newErrors;
   };
 
   const handleAddFeeStructure = async (e) => {
     e.preventDefault();
+    const validationErrors = validateFeeStructure();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
+      const modal = document.getElementById('feeStructureModal');
+      const modalInstance = window.bootstrap.Modal.getInstance(modal);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+      
       const res = await api.post('/api/fees/structure', feeStructureData);
       console.log(res.data);
-      alert('Fee structure added successfully!');
+      showPopup('Fee structure added successfully!');
       fetchFeeStructures(); // Refresh the list
       setFeeStructureData({
         class: '',
@@ -122,23 +175,24 @@ function FeesManagementPage() {
         installment_count: 1,
         description: '',
       });
+      setErrors({});
     } catch (err) {
       console.error(err.response.data);
-      alert('Error adding fee structure. Please check the console for details.');
+      showPopup('Error adding fee structure. Please check the console for details.');
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this fee record?')) {
+  const handleDelete = (id) => {
+    showConfirm('Are you sure you want to delete this fee record?', async () => {
       try {
         await api.delete(`/api/fees/${id}`);
-        alert('Fee record deleted successfully!');
+        showPopup('Fee record deleted successfully!');
         fetchFees(); // Refresh the list
       } catch (err) {
         console.error(err);
-        alert('Error deleting fee record. Please check the console for details.');
+        showPopup('Error deleting fee record. Please check the console for details.');
       }
-    }
+    });
   };
 
   const filteredFees = fees.filter((fee) => {
@@ -272,18 +326,19 @@ function FeesManagementPage() {
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
-              <form onSubmit={handleUpdatePayment}>
+              <form onSubmit={handleUpdatePayment} noValidate>
                 <div className="mb-3">
-                  <label className="form-label">Class</label>
-                  <select className="form-select" name="class" value={selectedClass} onChange={handleClassChange} required>
+                  <label className="form-label">Class *</label>
+                  <select className={`form-select ${errors.class ? 'is-invalid' : ''}`} name="class" value={selectedClass} onChange={handleClassChange}>
                     <option value="">Select Class</option>
                     {classList.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
+                  {errors.class && <div className="invalid-feedback">{errors.class}</div>}
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label">Student</label>
-                  <select className="form-select" name="student_id" value={paymentData.student_id} onChange={handlePaymentChange} required disabled={!selectedClass}>
+                  <label className="form-label">Student *</label>
+                  <select className={`form-select ${errors.student_id ? 'is-invalid' : ''}`} name="student_id" value={paymentData.student_id} onChange={handlePaymentChange} disabled={!selectedClass}>
                     <option value="">Select Student</option>
                     {filteredStudents.map((student) => (
                       <option key={student._id} value={student._id}>
@@ -291,11 +346,12 @@ function FeesManagementPage() {
                       </option>
                     ))}
                   </select>
+                  {errors.student_id && <div className="invalid-feedback">{errors.student_id}</div>}
                 </div>
                 
                 <div className="mb-3">
-                  <label className="form-label">Fee Structure</label>
-                  <select className="form-select" name="fee_structure_id" value={paymentData.fee_structure_id} onChange={handlePaymentChange} required disabled={!selectedClass}>
+                  <label className="form-label">Fee Structure *</label>
+                  <select className={`form-select ${errors.fee_structure_id ? 'is-invalid' : ''}`} name="fee_structure_id" value={paymentData.fee_structure_id} onChange={handlePaymentChange} disabled={!selectedClass}>
                     <option value="">Select Fee Structure</option>
                     {filteredFeeStructures.map((fs) => (
                       <option key={fs._id} value={fs._id}>
@@ -303,19 +359,22 @@ function FeesManagementPage() {
                       </option>
                     ))}
                   </select>
+                  {errors.fee_structure_id && <div className="invalid-feedback">{errors.fee_structure_id}</div>}
                 </div>
 
                 <div className="row">
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="form-label">Payment Date</label>
-                      <input type="date" className="form-control" name="payment_date" value={paymentData.payment_date} onChange={handlePaymentChange} required />
+                      <label className="form-label">Payment Date *</label>
+                      <input type="date" className={`form-control ${errors.payment_date ? 'is-invalid' : ''}`} name="payment_date" value={paymentData.payment_date} onChange={handlePaymentChange} />
+                      {errors.payment_date && <div className="invalid-feedback">{errors.payment_date}</div>}
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="form-label">Paid Amount</label>
-                      <input type="number" className="form-control" name="paid_amount" value={paymentData.paid_amount} onChange={handlePaymentChange} required />
+                      <label className="form-label">Paid Amount *</label>
+                      <input type="number" className={`form-control ${errors.paid_amount ? 'is-invalid' : ''}`} name="paid_amount" value={paymentData.paid_amount} onChange={handlePaymentChange} />
+                      {errors.paid_amount && <div className="invalid-feedback">{errors.paid_amount}</div>}
                     </div>
                   </div>
                 </div>
@@ -342,31 +401,34 @@ function FeesManagementPage() {
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
-              <form onSubmit={handleAddFeeStructure}>
+              <form onSubmit={handleAddFeeStructure} noValidate>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="form-label">Class</label>
-                      <input type="text" className="form-control" name="class" value={feeStructureData.class} onChange={handleFeeStructureChange} required />
+                      <label className="form-label">Class *</label>
+                      <input type="text" className={`form-control ${errors.class ? 'is-invalid' : ''}`} name="class" value={feeStructureData.class} onChange={handleFeeStructureChange} />
+                      {errors.class && <div className="invalid-feedback">{errors.class}</div>}
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="form-label">Term</label>
-                      <select className="form-select" name="term" value={feeStructureData.term} onChange={handleFeeStructureChange} required>
+                      <label className="form-label">Term *</label>
+                      <select className={`form-select ${errors.term ? 'is-invalid' : ''}`} name="term" value={feeStructureData.term} onChange={handleFeeStructureChange}>
                         <option value="Full">Full</option>
                         <option value="Term 1">Term 1</option>
                         <option value="Term 2">Term 2</option>
                         <option value="Term 3">Term 3</option>
                       </select>
+                      {errors.term && <div className="invalid-feedback">{errors.term}</div>}
                     </div>
                   </div>
                 </div>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="form-label">Total Amount</label>
-                      <input type="number" className="form-control" name="total_amount" value={feeStructureData.total_amount} onChange={handleFeeStructureChange} required />
+                      <label className="form-label">Total Amount *</label>
+                      <input type="number" className={`form-control ${errors.total_amount ? 'is-invalid' : ''}`} name="total_amount" value={feeStructureData.total_amount} onChange={handleFeeStructureChange} />
+                      {errors.total_amount && <div className="invalid-feedback">{errors.total_amount}</div>}
                     </div>
                   </div>
                   <div className="col-md-6">
