@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSmart - School Management System</title>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #1e293b;
+            --light: #f1f5f9;
+            --sidebar-width: 260px;
+            --text-grey: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: none;
+            list-style: none;
+        }
+
+        body {
+            background-color: var(--light);
+            display: flex;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: #ffffff;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid #e2e8f0;
+            transition: 0.3s;
+            z-index: 100;
+        }
+
+        .brand {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 700;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .brand i { margin-right: 10px; }
+
+        .menu { padding: 20px 0; }
+
+        .menu-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            color: var(--text-grey);
+            font-size: 15px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: #eff6ff;
+            color: var(--primary);
+            border-right: 4px solid var(--primary);
+        }
+
+        .menu-item i { width: 30px; }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            transition: 0.3s;
+        }
+
+        /* HEADER */
+        header {
+            height: 70px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .header-left h2 { font-size: 20px; color: var(--dark); }
+        .header-left .date { font-size: 13px; color: var(--text-grey); }
+
+        .user-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-wrapper img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-info h4 { font-size: 14px; color: var(--dark); }
+        .user-info small { color: var(--text-grey); font-size: 12px; }
+
+        /* DASHBOARD CARDS */
+        .cards-container {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-info h3 { font-size: 28px; color: var(--dark); margin-bottom: 5px; }
+        .card-info span { font-size: 14px; color: var(--text-grey); }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .c-blue { background: #dbeafe; color: var(--primary); }
+        .c-green { background: #dcfce7; color: var(--success); }
+        .c-orange { background: #fef3c7; color: var(--warning); }
+        .c-purple { background: #f3e8ff; color: #9333ea; }
+
+        /* RECENT STUDENTS TABLE */
+        .content-section {
+            padding: 0 30px 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .section-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { text-align: left; border-bottom: 1px solid #f1f5f9; }
+        th { padding: 15px 10px; font-size: 13px; color: var(--text-grey); font-weight: 500; }
+        td { padding: 15px 10px; font-size: 14px; color: var(--dark); }
+        
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .paid { background: #dcfce7; color: var(--success); }
+        .pending { background: #fef3c7; color: var(--warning); }
+
+        /* NOTICE BOARD (Right Side) */
+        .notice-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .notice-list h5 { font-size: 14px; color: var(--dark); margin-bottom: 4px; }
+        .notice-list p { font-size: 12px; color: var(--text-grey); }
+        .notice-date { font-size: 11px; color: var(--primary); font-weight: 500; margin-top: 5px; display: block; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .content-section { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { left: -260px; }
+            .sidebar.active { left: 0; }
+            .main-content { margin-left: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+        <div class="brand">
+            <i class="fa-solid fa-graduation-cap"></i>
+            EduSmart
+        </div>
+        <ul class="menu">
+            <li class="menu-item active">
+                <i class="fa-solid fa-table-columns"></i>
+                <span>Dashboard</span>
+            </li>
+            <li class="menu-item">
+                <i class="fa-solid fa-user-graduate"></i>
+                <span>Students</span>
+            </li>
+            <li class="menu-item">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span>Teachers</span>
+            </li>
+            <li class="menu-item">
+                <i class="fa-solid fa-school"></i>
+                <span>Classes</span>
+            </li>
+            <li class="menu-item">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <span>Fees & Finance</span>
+            </li>
+            <li class="menu-item">
+                <i class="fa-regular fa-calendar-days"></i>
+                <span>Timetable</span>
+            </li>
+            <li class="menu-item">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        
+        <!-- HEADER -->
+        <header>
+            <div class="header-left">
+                <h2>Admin Dashboard</h2>
+                <span class="date">Tuesday, 24 Oct 2023</span>
+            </div>
+            <div class="user-wrapper">
+                <div class="user-info">
+                    <h4>John Doe</h4>
+                    <small>Super Admin</small>
+                </div>
+                <!-- Placeholder Avatar -->
+                <img src="https://ui-avatars.com/api/?name=John+Doe&background=2563eb&color=fff" alt="User">
+            </div>
+        </header>
+
+        <!-- CARDS -->
+        <div class="cards-container">
+            <div class="card">
+                <div class="card-info">
+                    <h3>2,500</h3>
+                    <span>Total Students</span>
+                </div>
+                <div class="card-icon c-blue">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-info">
+                    <h3>150</h3>
+                    <span>Teachers</span>
+                </div>
+                <div class="card-icon c-purple">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-info">
+                    <h3>$52k</h3>
+                    <span>Revenue (Oct)</span>
+                </div>
+                <div class="card-icon c-green">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-info">
+                    <h3>12</h3>
+                    <span>New Notices</span>
+                </div>
+                <div class="card-icon c-orange">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENT SECTION -->
+        <div class="content-section">
+            
+            <!-- RECENT ADMISSIONS TABLE -->
+            <div class="section-box">
+                <div class="box-header">
+                    <h3>Recent Admissions</h3>
+                    <a href="#" class="btn-primary">View All</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student Name</th>
+                            <th>Class</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#2045</td>
+                            <td>Sarah Smith</td>
+                            <td>Class 10 A</td>
+                            <td>Oct 22, 2023</td>
+                            <td><span class="status paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>#2046</td>
+                            <td>Michael Brown</td>
+                            <td>Class 8 B</td>
+                            <td>Oct 21, 2023</td>
+                            <td><span class="status pending">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>#2047</td>
+                            <td>Emily Davis</td>
+                            <td>Class 5 A</td>
+                            <td>Oct 20, 2023</td>
+                            <td><span class="status paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>#2048</td>
+                            <td>James Wilson</td>
+                            <td>Class 12 Sci</td>
+                            <td>Oct 20, 2023</td>
+                            <td><span class="status paid">Paid</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- NOTICE BOARD -->
+            <div class="section-box">
+                <div class="box-header">
+                    <h3>Notice Board</h3>
+                </div>
+                <ul class="notice-list">
+                    <li>
+                        <h5>Parent-Teacher Meeting</h5>
+                        <p>Meeting for Class 10 students regarding board exams.</p>
+                        <span class="notice-date"><i class="fa-regular fa-clock"></i> 2 Days ago</span>
+                    </li>
+                    <li>
+                        <h5>Sports Day Selection</h5>
+                        <p>Trials for the football team will be held on Friday.</p>
+                        <span class="notice-date"><i class="fa-regular fa-clock"></i> 4 Days ago</span>
+                    </li>
+                    <li>
+                        <h5>Winter Vacation</h5>
+                        <p>School closed from Dec 24th to Jan 2nd.</p>
+                        <span class="notice-date"><i class="fa-regular fa-clock"></i> 1 Week ago</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JS for Mobile Toggle (Optional) -->
+    <script>
+        // Simple script to handle sidebar interactivity on smaller screens
+        const sidebar = document.getElementById('sidebar');
+        // You can add a button with onclick="sidebar.classList.toggle('active')" to toggle
+    </script>
+</body>
+</html>

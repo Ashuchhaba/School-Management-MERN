@@ -1,7 +1,16 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 function Sidebar() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   return (
     <nav className="sidebar" id="sidebar">
       <div className="sidebar-header">
@@ -40,10 +49,10 @@ function Sidebar() {
           Admissions
         </NavLink>
         <div className="mt-4 pt-4" style={{ borderTop: '1px solid #374151' }}>
-          <NavLink to="/login" className="nav-link text-danger">
+          <button onClick={handleLogout} className="nav-link text-danger" style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left' }}>
             <i className="fas fa-sign-out-alt"></i>
             Logout
-          </NavLink>
+          </button>
         </div>
       </div>
     </nav>

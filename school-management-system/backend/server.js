@@ -1,32 +1,58 @@
-const express = require('express');
 const dotenv = require('dotenv');
-const cors = require('cors');
-const connectDB = require('./config/db');
-
 // Load env vars
 dotenv.config();
 
+const express = require('express');
+const cors = require('cors');
+const connectDB = require('./config/db');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const { createDefaultAdmin } = require('./controllers/authController');
+const { setNoCache } = require('./middleware/cacheControlMiddleware');
+const { protect } = require('./middleware/authMiddleware');
+
+
 // Connect to database
-connectDB();
+connectDB().then(() => {
+  createDefaultAdmin();
+});
 
 const app = express();
 
 const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  optionsSuccessStatus: 200 
+  credentials: true, // Allow cookies to be sent
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'a secret key',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    },
+  })
+);
+
 // Define Routes
-app.use('/api/students', require('./routes/studentRoutes'));
-app.use('/api/staff', require('./routes/staffRoutes'));
-app.use('/api/fees', require('./routes/feeRoutes'));
-app.use('/api/salaries', require('./routes/salaryRoutes'));
-app.use('/api/activities', require('./routes/activityRoutes'));
-app.use('/api/admissions', require('./routes/admissionRoutes'));
-app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/students', protect, setNoCache, require('./routes/studentRoutes'));
+app.use('/api/staff', protect, setNoCache, require('./routes/staffRoutes'));
+app.use('/api/fees', protect, setNoCache, require('./routes/feeRoutes'));
+app.use('/api/salaries', protect, setNoCache, require('./routes/salaryRoutes'));
+app.use('/api/activities', protect, setNoCache, require('./routes/activityRoutes'));
+app.use('/api/admissions', protect, setNoCache, require('./routes/admissionRoutes'));
+app.use('/api/dashboard', protect, setNoCache, require('./routes/dashboardRoutes'));
+
 
 app.get('/', (req, res) => {
   res.send('Server is running');

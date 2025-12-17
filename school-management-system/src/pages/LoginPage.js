@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { usePopup } from '../contexts/PopupContext';
 
 function LoginPage() {
@@ -7,16 +8,16 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
   const { showPopup } = usePopup();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Simple validation (in real application, this would be server-side)
-    if (username === 'admin' && password === 'admin123') {
-      // Redirect to dashboard
+    try {
+      await login(username, password);
       navigate('/dashboard');
-    } else {
-      showPopup('Invalid credentials. Use admin/admin123 for demo.');
+    } catch (error) {
+      showPopup('Invalid credentials. Please try again.');
     }
   };
 
