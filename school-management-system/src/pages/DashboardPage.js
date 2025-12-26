@@ -45,10 +45,18 @@ function DashboardPage() {
               <p>Loading stats...</p>
             ) : (
               <>
-                <StatCard icon="fa-user-graduate" label="Total Students" value={stats.totalStudents} type="primary" />
-                <StatCard icon="fa-users" label="Total Staff" value={stats.totalStaff} type="success" />
-                <StatCard icon="fa-money-bill-wave" label="Monthly Fees" value={`₹${stats.monthlyFees.toLocaleString('en-IN')}`} type="warning" />
-                <StatCard icon="fa-chart-line" label="Monthly Expenses" value={`₹${stats.monthlyExpenses.toLocaleString('en-IN')}`} type="info" />
+                <div className="col-lg-3 col-md-6 mb-3">
+                  <StatCard icon="fa-user-graduate" label="Total Students" value={stats.totalStudents} type="primary" />
+                </div>
+                <div className="col-lg-3 col-md-6 mb-3">
+                  <StatCard icon="fa-users" label="Total Staff" value={stats.totalStaff} type="success" />
+                </div>
+                <div className="col-lg-3 col-md-6 mb-3">
+                  <StatCard icon="fa-money-bill-wave" label="Monthly Fees" value={`₹${stats.monthlyFees.toLocaleString('en-IN')}`} type="warning" />
+                </div>
+                <div className="col-lg-3 col-md-6 mb-3">
+                  <StatCard icon="fa-chart-line" label="Monthly Expenses" value={`₹${stats.monthlyExpenses.toLocaleString('en-IN')}`} type="info" />
+                </div>
               </>
             )}
           </div>

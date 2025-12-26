@@ -1,33 +1,48 @@
 const User = require('../models/userModel');
+const Staff = require('../models/staffModel');
 const logger = require('../config/logger');
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = async (req, res) => {
-  const { username, password } = req.body;
+  const { identifier, password, role } = req.body;
 
   try {
-    const user = await User.findOne({ username });
+    let user;
+    if (role === 'Admin') {
+      user = await User.findOne({ username: identifier });
+    } else if (role === 'Staff') {
+      user = await Staff.findOne({
+        $or: [{ email: identifier }, { mobile_no: identifier }],
+      });
+    } else if (role === 'Student') {
+      // Logic for student login can be added here
+      logger.warn(`Login attempt for unimplemented role: Student`);
+      return res.status(400).send('Student login is not yet implemented.');
+    } else {
+      logger.warn(`Invalid role specified: ${role}`);
+      return res.status(400).send('Invalid role specified.');
+    }
 
     if (user && (await user.matchPassword(password))) {
       req.session.user = {
         id: user._id,
-        username: user.username,
-        role: user.role,
+        name: user.name || user.username,
+        role: role.toLowerCase(),
       };
-      logger.info(`User ${username} logged in successfully.`);
+      logger.info(`User ${user.name || user.username} logged in successfully as ${role}.`);
       res.json({
         _id: user._id,
-        username: user.username,
-        role: user.role,
+        name: user.name || user.username,
+        role: role.toLowerCase(),
       });
     } else {
-      logger.warn(`Failed login attempt for username: ${username}`);
-      res.status(401).send('Invalid username or password');
+      logger.warn(`Failed login attempt for identifier: ${identifier} with role: ${role}`);
+      res.status(401).send('Invalid credentials');
     }
   } catch (error) {
-    logger.error(`Error during login for username: ${username}`, error);
+    logger.error(`Error during login for identifier: ${identifier}`, error);
     res.status(500).send('Server error');
   }
 };

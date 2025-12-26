@@ -23,10 +23,11 @@ export const AuthProvider = ({ children }) => {
     checkUser();
   }, [checkUser]);
 
-  const login = async (username, password) => {
+  const login = async (identifier, password, role) => {
     try {
-      const { data } = await api.post('/api/auth/login', { username, password });
+      const { data } = await api.post('/api/auth/login', { identifier, password, role });
       setUser(data);
+      return data; // Return user data
     } catch (error) {
       setUser(null);
       throw error;

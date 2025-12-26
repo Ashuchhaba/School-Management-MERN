@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-function Sidebar() {
+function StaffSidebar() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -24,33 +24,37 @@ function Sidebar() {
       </div>
 
       <div className="sidebar-menu">
-        <NavLink to="/dashboard" className="nav-link">
+        <NavLink to="/staff/dashboard" className="nav-link">
           <i className="fas fa-tachometer-alt"></i>
           Dashboard
         </NavLink>
-        <NavLink to="/fees" className="nav-link">
-          <i className="fas fa-money-bill-wave"></i>
-          Fees Management
+        <NavLink to="/staff/profile" className="nav-link">
+          <i className="fas fa-user"></i>
+          Profile
         </NavLink>
-        <NavLink to="/staff" className="nav-link">
-          <i className="fas fa-users"></i>
-          Staff Details
-        </NavLink>
-        <NavLink to="/students" className="nav-link">
+        <NavLink to="/staff/students" className="nav-link">
           <i className="fas fa-user-graduate"></i>
-          Student Details
+          Students
         </NavLink>
-        <NavLink to="/staff-payment" className="nav-link">
-          <i className="fas fa-credit-card"></i>
-          Staff Payment
+        <NavLink to="/staff/attendance" className="nav-link">
+          <i className="fas fa-calendar-check"></i>
+          Attendance
         </NavLink>
-        <NavLink to="/admissions" className="nav-link">
-          <i className="fas fa-user-plus"></i>
-          Admissions
+        <NavLink to="/staff/homework" className="nav-link">
+          <i className="fas fa-book"></i>
+          Homework
         </NavLink>
-        <NavLink to="/reports" className="nav-link">
-          <i className="fas fa-chart-bar"></i>
-          Reports
+        <NavLink to="/staff/exams" className="nav-link">
+          <i className="fas fa-pen-alt"></i>
+          Exams & Marks
+        </NavLink>
+        <NavLink to="/staff/leave" className="nav-link">
+          <i className="fas fa-calendar-alt"></i>
+          Leave
+        </NavLink>
+        <NavLink to="/staff/salary" className="nav-link">
+          <i className="fas fa-money-bill-wave"></i>
+          Salary
         </NavLink>
         <div className="mt-4 pt-4" style={{ borderTop: '1px solid #374151' }}>
           <button onClick={handleLogout} className="nav-link text-danger" style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left' }}>
@@ -63,4 +67,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default StaffSidebar;

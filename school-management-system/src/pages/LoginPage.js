@@ -4,18 +4,26 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePopup } from '../contexts/PopupContext';
 
 function LoginPage() {
-  const [username, setUsername] = useState('');
+  const [role, setRole] = useState('Admin'); // Admin, Staff, Student
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth(); // Get user from auth context
   const { showPopup } = usePopup();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await login(username, password);
-      navigate('/dashboard');
+      const loggedInUser = await login(identifier, password, role);
+      if (loggedInUser.role === 'admin') {
+        navigate('/dashboard');
+      } else if (loggedInUser.role === 'staff') {
+        navigate('/staff/dashboard');
+      } else {
+        // Handle other roles or default redirect
+        navigate('/');
+      }
     } catch (error) {
       showPopup('Invalid credentials. Please try again.');
     }
@@ -23,6 +31,18 @@ function LoginPage() {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const renderIdentifierLabel = () => {
+    switch (role) {
+      case 'Staff':
+        return 'Email or Mobile';
+      case 'Student':
+        return 'GR No.';
+      case 'Admin':
+      default:
+        return 'Username';
+    }
   };
 
   return (
@@ -38,21 +58,26 @@ function LoginPage() {
                   </div>
                   <h2 className="text-primary fw-bold">SATYAM STARS</h2>
                   <p className="text-muted">International School</p>
-                  <h4 className="mt-3">Admin Portal</h4>
+                  <div className="btn-group my-3">
+                    <button type="button" className={`btn ${role === 'Admin' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setRole('Admin')}>Admin</button>
+                    <button type="button" className={`btn ${role === 'Staff' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setRole('Staff')}>Staff</button>
+                    <button type="button" className={`btn ${role === 'Student' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setRole('Student')}>Student</button>
+                  </div>
+                  <h4 className="mt-3">{role} Portal</h4>
                 </div>
 
                 <form onSubmit={handleLogin} className="login-form">
                   <div className="mb-3">
-                    <label htmlFor="username" className="form-label">
-                      <i className="fas fa-user me-2"></i>Username
+                    <label htmlFor="identifier" className="form-label">
+                      <i className="fas fa-user me-2"></i>{renderIdentifierLabel()}
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="username"
-                      name="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      id="identifier"
+                      name="identifier"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
                       required
                     />
                   </div>
@@ -85,7 +110,7 @@ function LoginPage() {
                   </div>
 
                   <button type="submit" className="btn btn-primary w-100 mb-3">
-                    <i className="fas fa-sign-in-alt me-2"></i>Login
+                    <i className="fas fa-sign-in-alt me-2"></i>Login as {role}
                   </button>
 
                   <div className="text-center">

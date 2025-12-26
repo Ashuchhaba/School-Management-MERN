@@ -7,8 +7,14 @@ const Activity = require('../models/activityModel');
 // @access  Public
 const getStudents = async (req, res) => {
   try {
-    const students = await Student.find({});
-    res.json(students);
+    const students = await Student.find({}).lean();
+    const formattedStudents = students.map(student => ({
+      ...student,
+      rollNo: student.roll_no,
+      mobile: student.mobile_no1,
+      admissionDate: student.admission_date,
+    }));
+    res.json(formattedStudents);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
@@ -20,9 +26,15 @@ const getStudents = async (req, res) => {
 // @access  Public
 const getStudentById = async (req, res) => {
   try {
-    const student = await Student.findById(req.params.id);
+    const student = await Student.findById(req.params.id).lean();
     if (student) {
-      res.json(student);
+      const formattedStudent = {
+        ...student,
+        rollNo: student.roll_no,
+        mobile: student.mobile_no1,
+        admissionDate: student.admission_date,
+      };
+      res.json(formattedStudent);
     } else {
       res.status(404).json({ message: 'Student not found' });
     }
@@ -60,7 +72,14 @@ const updateStudent = async (req, res) => {
         student[key] = req.body[key];
       }
       const updatedStudent = await student.save();
-      res.json(updatedStudent);
+      const plainStudent = updatedStudent.toObject();
+      const formattedStudent = {
+        ...plainStudent,
+        rollNo: plainStudent.roll_no,
+        mobile: plainStudent.mobile_no1,
+        admissionDate: plainStudent.admission_date,
+      };
+      res.json(formattedStudent);
     } else {
       res.status(404).json({ message: 'Student not found' });
     }

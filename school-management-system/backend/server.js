@@ -52,6 +52,11 @@ app.use('/api/salaries', protect, setNoCache, require('./routes/salaryRoutes'));
 app.use('/api/activities', protect, setNoCache, require('./routes/activityRoutes'));
 app.use('/api/admissions', protect, setNoCache, require('./routes/admissionRoutes'));
 app.use('/api/dashboard', protect, setNoCache, require('./routes/dashboardRoutes'));
+app.use('/api/reports', protect, setNoCache, require('./routes/reportRoutes'));
+app.use('/api/attendance', protect, setNoCache, require('./routes/attendanceRoutes'));
+app.use('/api/homework', protect, setNoCache, require('./routes/homeworkRoutes'));
+app.use('/api/exams', protect, setNoCache, require('./routes/examRoutes'));
+app.use('/api/leave', protect, setNoCache, require('./routes/leaveRoutes'));
 
 
 app.get('/', (req, res) => {
