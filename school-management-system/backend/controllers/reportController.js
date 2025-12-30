@@ -43,15 +43,44 @@ const getStaffReport = async (req, res) => {
   }
 };
 
+const fs = require('fs');
+const path = require('path');
+
 // @desc    Get student fees report
 // @route   GET /api/reports/fees
 // @access  Private/Admin
 const getStudentFeesReport = async (req, res) => {
   try {
-    // Filtering logic will be added here
-    const fees = await Fee.find(req.query).populate('student');
-    res.json(fees);
+    const fees = await Fee.find(req.query).populate('student_id');
+    
+    const formattedFees = fees.map(fee => {
+        try {
+            // Check if population worked (it should be an object with a name property)
+            let student = fee.student_id;
+            if (!student || !student.name) {
+                 student = { name: 'Unknown', class: 'N/A' };
+            }
+
+            return {
+                _id: fee._id,
+                studentName: student.name,
+                class: student.class,
+                totalFees: (fee.paid_amount || 0) + (fee.due_amount || 0),
+                paidAmount: fee.paid_amount || 0,
+                pendingAmount: fee.due_amount || 0,
+                paymentStatus: fee.status || 'N/A',
+                paymentDate: fee.payment_date
+            };
+        } catch (mapErr) {
+            fs.appendFileSync(path.join(__dirname, '../debug_error.log'), `Mapping Error: ${mapErr.message}\n`);
+            return null;
+        }
+    }).filter(f => f !== null); // Remove failed records
+
+    res.json(formattedFees);
   } catch (error) {
+    console.error('Error fetching fee report:', error);
+    fs.appendFileSync(path.join(__dirname, '../debug_error.log'), `Controller Error: ${error.message}\nStack: ${error.stack}\n`);
     res.status(500).json({ message: 'Server Error' });
   }
 };
@@ -61,10 +90,26 @@ const getStudentFeesReport = async (req, res) => {
 // @access  Private/Admin
 const getStaffSalaryReport = async (req, res) => {
   try {
-    // Filtering logic will be added here
-    const salaries = await Salary.find(req.query).populate('staff');
-    res.json(salaries);
+    const salaries = await Salary.find(req.query).populate('staff_id');
+    
+    const formattedSalaries = salaries.map(salary => {
+        const staff = salary.staff_id || { name: 'Unknown', designation: 'N/A' };
+        
+        return {
+            _id: salary._id,
+            staffName: staff.name,
+            designation: staff.designation,
+            month: new Date(salary.payment_month).toLocaleString('default', { month: 'long', year: 'numeric' }), // e.g., "January 2025"
+            salaryAmount: salary.calculated_salary,
+            paymentStatus: salary.paid_on ? 'Paid' : 'Pending',
+            paymentDate: salary.paid_on || null,
+            rawDate: salary.payment_month // Keep raw date for filtering if needed
+        };
+    });
+
+    res.json(formattedSalaries);
   } catch (error) {
+    console.error('Error fetching salary report:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 };

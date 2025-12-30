@@ -144,10 +144,18 @@ function StaffPaymentPage() {
               <p>Loading statistics...</p>
             ) : (
               <>
-                <StatCard icon="fa-money-bill-wave" label={`Total Salary Due (${filters.month})`} value={`₹${stats.total_salary_due?.toLocaleString('en-IN')}`} type="primary" />
-                <StatCard icon="fa-check-circle" label={`Total Paid (${filters.month})`} value={`₹${stats.total_paid?.toLocaleString('en-IN')}`} type="success" />
-                <StatCard icon="fa-users" label="Staff Paid" value={`${stats.staff_paid} / ${stats.total_staff}`} type="warning" />
-                <StatCard icon="fa-percentage" label={`Avg Attendance (${filters.month})`} value={`${stats.avg_attendance_percentage}%`} type="info" />
+                <div className="col-lg-3 col-md-6 mb-3">
+                  <StatCard icon="fa-money-bill-wave" label={`Total Salary Due (${filters.month})`} value={`₹${stats.total_salary_due?.toLocaleString('en-IN')}`} type="primary" />
+                </div>
+                <div className="col-lg-3 col-md-6 mb-3">
+                  <StatCard icon="fa-check-circle" label={`Total Paid (${filters.month})`} value={`₹${stats.total_paid?.toLocaleString('en-IN')}`} type="success" />
+                </div>
+                <div className="col-lg-3 col-md-6 mb-3">
+                  <StatCard icon="fa-users" label="Staff Paid" value={`${stats.staff_paid} / ${stats.total_staff}`} type="warning" />
+                </div>
+                <div className="col-lg-3 col-md-6 mb-3">
+                  <StatCard icon="fa-percentage" label={`Avg Attendance (${filters.month})`} value={`${stats.avg_attendance_percentage}%`} type="info" />
+                </div>
               </>
             )}
           </div>

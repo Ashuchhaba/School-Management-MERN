@@ -9,36 +9,45 @@ const loginUser = async (req, res) => {
   const { identifier, password, role } = req.body;
 
   try {
-    let user;
-    if (role === 'Admin') {
-      user = await User.findOne({ username: identifier });
-    } else if (role === 'Staff') {
-      user = await Staff.findOne({
-        $or: [{ email: identifier }, { mobile_no: identifier }],
-      });
-    } else if (role === 'Student') {
-      // Logic for student login can be added here
-      logger.warn(`Login attempt for unimplemented role: Student`);
-      return res.status(400).send('Student login is not yet implemented.');
-    } else {
-      logger.warn(`Invalid role specified: ${role}`);
-      return res.status(400).send('Invalid role specified.');
-    }
+    // Check User collection for both Admin and Staff
+    // For Staff, identifier is email which is stored as username in User model
+    const user = await User.findOne({ username: identifier });
 
     if (user && (await user.matchPassword(password))) {
+      // Check if user is active
+      if (user.status === false) {
+         logger.warn(`Login attempt for inactive user: ${identifier}`);
+         return res.status(403).send('Account is inactive. Please contact admin.');
+      }
+
+      // Check if role matches
+      if (user.role !== role.toLowerCase() && user.role !== role) { 
+         // Allow case insensitivity or exact match. stored roles are lowercase 'staff', 'admin' usually?
+         // In User model: enum: ['admin', 'staff', 'student']
+         // req.body.role might be 'Staff' (Capitalized)
+         if (user.role !== role.toLowerCase()) {
+             logger.warn(`Role mismatch for user ${identifier}. Expected ${role}, found ${user.role}`);
+             return res.status(401).send('Invalid credentials (role mismatch)');
+         }
+      }
+
       req.session.user = {
         id: user._id,
         name: user.name || user.username,
-        role: role.toLowerCase(),
+        role: user.role,
+        linkedId: user.referenceId, // Store linked Staff ID
       };
-      logger.info(`User ${user.name || user.username} logged in successfully as ${role}.`);
+
+      logger.info(`User ${user.name || user.username} logged in successfully as ${user.role}.`);
       res.json({
         _id: user._id,
         name: user.name || user.username,
-        role: role.toLowerCase(),
+        role: user.role,
+        linkedId: user.referenceId,
+        isFirstLogin: user.isFirstLogin,
       });
     } else {
-      logger.warn(`Failed login attempt for identifier: ${identifier} with role: ${role}`);
+      logger.warn(`Failed login attempt for identifier: ${identifier}`);
       res.status(401).send('Invalid credentials');
     }
   } catch (error) {

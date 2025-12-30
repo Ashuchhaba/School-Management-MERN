@@ -19,7 +19,11 @@ function LoginPage() {
       if (loggedInUser.role === 'admin') {
         navigate('/dashboard');
       } else if (loggedInUser.role === 'staff') {
-        navigate('/staff/dashboard');
+        if (loggedInUser.isFirstLogin) {
+            navigate('/staff/profile', { state: { changePassword: true } });
+        } else {
+            navigate('/staff/dashboard');
+        }
       } else {
         // Handle other roles or default redirect
         navigate('/');
@@ -36,7 +40,7 @@ function LoginPage() {
   const renderIdentifierLabel = () => {
     switch (role) {
       case 'Staff':
-        return 'Email or Mobile';
+        return 'Email';
       case 'Student':
         return 'GR No.';
       case 'Admin':

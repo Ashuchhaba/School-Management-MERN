@@ -9,10 +9,14 @@ const {
     getStaffProfile,
     getAssignedStudents,
     getDashboardStats,
-    changePassword
+    changePassword,
+    resetStaffPassword
 } = require('../controllers/staffController');
 const { admin } = require('../middleware/adminMiddleware');
 const { staff } = require('../middleware/staffMiddleware');
+
+// Admin route for resetting staff password - DEFINED FIRST
+router.put('/reset-password/:id', admin, resetStaffPassword);
 
 // Staff route for profile
 router.get('/profile', staff, getStaffProfile);

@@ -83,7 +83,11 @@ function StaffDetailsPage() {
 
       const res = await api.post('/api/staff', newStaffData);
       console.log(res.data);
-      showPopup('Staff member added successfully!');
+      if (res.data.tempPassword) {
+        showPopup(`Staff member added successfully! Temporary Password: ${res.data.tempPassword} (Please save this!)`);
+      } else {
+        showPopup('Staff member added successfully!');
+      }
       fetchStaff(); // Refresh the list
       // Close modal - Bootstrap modals can be closed programmatically
       // For now, we'll just reset the form

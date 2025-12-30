@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import StaffLayout from '../components/StaffLayout';
 import api from '../api';
 
@@ -12,6 +13,16 @@ function StaffProfilePage() {
     confirmPassword: '',
   });
   const [passwordError, setPasswordError] = useState('');
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.changePassword) {
+        setShowPasswordForm(true);
+        // Optional: clear state or just let it be. 
+        // Showing an alert might be good too.
+        alert("Please change your password for the first login.");
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const fetchStaffProfile = async () => {

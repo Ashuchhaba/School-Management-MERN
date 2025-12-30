@@ -16,6 +16,23 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'staff', 'student'],
     default: 'admin',
   },
+  email: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  referenceId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Staff', // Can be dynamic, but for now helpful for population
+  },
+  isFirstLogin: {
+    type: Boolean,
+    default: true,
+  },
+  status: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 // Hash password before saving

@@ -35,3 +35,60 @@
 {"level":"info","message":"User Test Staff logged in successfully as Staff."}
 {"level":"info","message":"User undefined logged out successfully."}
 {"level":"info","message":"User Test Staff logged in successfully as Staff."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: sunilpradhan@gmail.com"}
+{"level":"warn","message":"Failed login attempt for identifier: sunilpradhan@gmail.com"}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"Default admin user created."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User ashuchhaba001@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: ashuchhaba001@gmail.com"}
+{"level":"warn","message":"Role mismatch for user ashuchhaba001@gmail.com. Expected Admin, found staff"}
+{"level":"warn","message":"Role mismatch for user ashuchhaba001@gmail.com. Expected Admin, found staff"}
+{"level":"info","message":"User ashuchhaba001@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"code":11000,"errorLabelSet":{},"errorResponse":{"code":11000,"errmsg":"E11000 duplicate key error collection: test.staffs index: mobile_no_1 dup key: { mobile_no: \"9845748574\" }","index":0,"keyPattern":{"mobile_no":1},"keyValue":{"mobile_no":"9845748574"}},"index":0,"keyPattern":{"mobile_no":1},"keyValue":{"mobile_no":"9845748574"},"level":"error","message":"Error creating staff: E11000 duplicate key error collection: test.staffs index: mobile_no_1 dup key: { mobile_no: \"9845748574\" }","stack":"MongoServerError: E11000 duplicate key error collection: test.staffs index: mobile_no_1 dup key: { mobile_no: \"9845748574\" }\n    at InsertOneOperation.handleOk (C:\\MERN_FINAL_PROJECT\\school-management-system\\node_modules\\mongodb\\lib\\operations\\insert.js:51:19)\n    at tryOperation (C:\\MERN_FINAL_PROJECT\\school-management-system\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:214:34)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async executeOperation (C:\\MERN_FINAL_PROJECT\\school-management-system\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:78:16)\n    at async Collection.insertOne (C:\\MERN_FINAL_PROJECT\\school-management-system\\node_modules\\mongodb\\lib\\collection.js:154:16)"}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User ashuchhaba001@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User ashuchhaba001@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: admin"}
+{"level":"warn","message":"Failed login attempt for identifier: admin"}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: admin"}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"Attempting to reset password for staffId: 6952855ee57abc7e4d848fdc"}
+{"level":"info","message":"Created missing user account for staff HTTP Test Staff during password reset"}
+{"level":"info","message":"Attempting to reset password for staffId: 69274dac31391a9429c31dc0"}
+{"level":"info","message":"Created missing user account for staff Priti Singh during password reset"}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: pritishing@gmail.com"}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: pritisingh@gmail.com"}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}

@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1050; /* Higher than other content */
+    z-index: 2000; /* Higher than Bootstrap modals (1055) */
   }
   
   .popup-modal {

@@ -38,14 +38,24 @@ const StudentFeesReport = () => {
       filtered = filtered.filter((fee) => fee.paymentStatus === filters.feeStatus);
     }
     if (filters.startDate) {
-      filtered = filtered.filter(
-        (fee) => new Date(fee.paymentDate) >= new Date(filters.startDate)
-      );
+      filtered = filtered.filter((fee) => {
+        if (!fee.paymentDate) return false;
+        const feeDate = new Date(fee.paymentDate);
+        feeDate.setHours(0, 0, 0, 0);
+        const filterStartDate = new Date(filters.startDate);
+        filterStartDate.setHours(0, 0, 0, 0);
+        return feeDate >= filterStartDate;
+      });
     }
     if (filters.endDate) {
-      filtered = filtered.filter(
-        (fee) => new Date(fee.paymentDate) <= new Date(filters.endDate)
-      );
+      filtered = filtered.filter((fee) => {
+        if (!fee.paymentDate) return false;
+        const feeDate = new Date(fee.paymentDate);
+        feeDate.setHours(0, 0, 0, 0);
+        const filterEndDate = new Date(filters.endDate);
+        filterEndDate.setHours(0, 0, 0, 0);
+        return feeDate <= filterEndDate;
+      });
     }
     setFilteredFees(filtered);
   }, [filters, fees]);

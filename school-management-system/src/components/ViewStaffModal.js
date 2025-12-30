@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
+import api from '../api';
+import { usePopup } from '../contexts/PopupContext';
 
 function ViewStaffModal({ staff, onClose }) {
+  const [newPassword, setNewPassword] = useState(null);
+  const [resetting, setResetting] = useState(false);
+  const { showPopup, showConfirm } = usePopup();
+
   if (!staff) {
     return null;
   }
+
+  const handleResetPassword = async () => {
+    showConfirm('Are you sure you want to reset the password for this staff member?', async () => {
+        setResetting(true);
+        try {
+            const url = `/api/staff/reset-password/${staff._id}`;
+            console.log('Calling Reset Password URL:', url);
+            const res = await api.put(url);
+            setNewPassword(res.data.newPassword);
+            showPopup('Password reset successfully!');
+        } catch (err) {
+            console.error('Error resetting password full object:', err);
+            console.error('Error response data:', err.response?.data);
+            showPopup('Failed to reset password. ' + (err.response?.data?.message || err.message));
+        } finally {
+            setResetting(false);
+        }
+    });
+  };
 
   return (
     <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
@@ -15,6 +40,7 @@ function ViewStaffModal({ staff, onClose }) {
           </div>
           <div className="modal-body">
             <form>
+              <h6 className="text-primary mb-3">Personal Information</h6>
               <div className="row">
                 <div className="col-md-6">
                   <div className="mb-3">
@@ -102,6 +128,44 @@ function ViewStaffModal({ staff, onClose }) {
                     <input type="text" className="form-control" value={staff.salary} disabled />
                   </div>
                 </div>
+              </div>
+
+              <hr className="my-4" />
+              <h6 className="text-primary mb-3">Login Details</h6>
+              <div className="row align-items-center">
+                  <div className="col-md-6">
+                      <div className="mb-3">
+                          <label className="form-label">Username / Email</label>
+                          <input type="text" className="form-control" value={staff.email} disabled />
+                      </div>
+                  </div>
+                  <div className="col-md-6">
+                      <label className="form-label">Password</label>
+                      <div className="input-group">
+                          <input 
+                            type="text" 
+                            className="form-control" 
+                            value={newPassword || "********"} 
+                            disabled={!newPassword} 
+                            readOnly 
+                          />
+                          <button 
+                            className="btn btn-outline-danger" 
+                            type="button" 
+                            onClick={handleResetPassword}
+                            disabled={resetting}
+                          >
+                            {resetting ? 'Resetting...' : 'Reset Password'}
+                          </button>
+                      </div>
+                      {newPassword && (
+                          <small className="text-success mt-1 d-block">
+                              <i className="fas fa-check-circle me-1"></i> 
+                              Password reset successfully! Please copy and share this with the staff.
+                          </small>
+                      )}
+                      {!newPassword && <small className="text-muted">Password is hidden for security.</small>}
+                  </div>
               </div>
             </form>
           </div>

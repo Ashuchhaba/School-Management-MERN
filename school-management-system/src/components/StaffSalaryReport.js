@@ -30,7 +30,12 @@ const StaffSalaryReport = () => {
   useEffect(() => {
     let filtered = salaries;
     if (filters.month) {
-      filtered = filtered.filter((salary) => salary.month === filters.month);
+      filtered = filtered.filter((salary) => {
+          if (!salary.rawDate) return false;
+          // Direct string comparison of YYYY-MM
+          const salaryMonth = salary.rawDate.substring(0, 7); 
+          return salaryMonth === filters.month;
+      });
     }
     if (filters.paymentStatus) {
       filtered = filtered.filter(
@@ -54,7 +59,7 @@ const StaffSalaryReport = () => {
         salary.month,
         salary.salaryAmount,
         salary.paymentStatus,
-        new Date(salary.paymentDate).toLocaleDateString(),
+        salary.paymentDate ? new Date(salary.paymentDate).toLocaleDateString() : 'N/A',
       ]),
     });
     doc.save('staff-salary-report.pdf');
@@ -79,7 +84,7 @@ const StaffSalaryReport = () => {
           <div className="row mb-3">
             <div className="col-md-3">
               <input
-                type="text"
+                type="month"
                 className="form-control"
                 placeholder="Filter by Month"
                 name="month"

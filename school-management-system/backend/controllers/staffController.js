@@ -1,15 +1,17 @@
 const Staff = require('../models/staffModel');
+const User = require('../models/userModel');
 const Student = require('../models/studentModel');
 const Salary = require('../models/salaryModel');
 const StudentAttendance = require('../models/studentAttendanceModel');
 const logger = require('../config/logger');
+const crypto = require('crypto');
 
 // @desc    Get all staff
 // @route   GET /api/staff
 // @access  Private (Admin)
 const getStaffs = async (req, res) => {
     try {
-        const staffs = await Staff.find({}).select('-password');
+        const staffs = await Staff.find({});
         res.json(staffs);
     } catch (error) {
         logger.error('Error fetching staff:', error);
@@ -22,7 +24,7 @@ const getStaffs = async (req, res) => {
 // @access  Private (Admin)
 const getStaffById = async (req, res) => {
     try {
-        const staff = await Staff.findById(req.params.id).select('-password');
+        const staff = await Staff.findById(req.params.id);
         if (staff) {
             res.json(staff);
         } else {
@@ -39,11 +41,38 @@ const getStaffById = async (req, res) => {
 // @access  Private (Admin)
 const createStaff = async (req, res) => {
     try {
+        const { email, name, mobile_no } = req.body;
+
+        // Check if user already exists
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ message: 'User with this email already exists' });
+        }
+
         const staff = new Staff({
             ...req.body,
         });
         const createdStaff = await staff.save();
-        res.status(201).json(createdStaff);
+
+        // Generate temporary password
+        const tempPassword = crypto.randomBytes(4).toString('hex'); // 8 characters
+
+        // Create User account
+        const user = new User({
+            username: email, // Use email as username
+            email: email,
+            password: tempPassword, // Will be hashed by pre-save hook
+            role: 'staff',
+            referenceId: createdStaff._id,
+            isFirstLogin: true,
+        });
+
+        await user.save();
+
+        res.status(201).json({
+            staff: createdStaff,
+            tempPassword: tempPassword
+        });
     } catch (error) {
         logger.error('Error creating staff:', error);
         res.status(500).json({ message: 'Server Error' });
@@ -62,6 +91,15 @@ const updateStaff = async (req, res) => {
                 staff[key] = req.body[key];
             }
             const updatedStaff = await staff.save();
+
+            // Sync status with User account if changed
+            if (req.body.is_active !== undefined) {
+                 await User.updateOne(
+                    { referenceId: staff._id },
+                    { status: req.body.is_active }
+                 );
+            }
+
             res.json(updatedStaff);
         } else {
             res.status(404).json({ message: 'Staff not found' });
@@ -80,6 +118,8 @@ const deleteStaff = async (req, res) => {
         const staff = await Staff.findById(req.params.id);
         if (staff) {
             await staff.deleteOne();
+            // Delete associated user
+            await User.deleteOne({ referenceId: staff._id });
             res.json({ message: 'Staff removed' });
         } else {
             res.status(404).json({ message: 'Staff not found' });
@@ -96,7 +136,7 @@ const deleteStaff = async (req, res) => {
 // @access  Private (Staff)
 const getStaffProfile = async (req, res) => {
   try {
-    const staff = await Staff.findById(req.session.user.id).select('-password');
+    const staff = await Staff.findById(req.session.user.linkedId);
     if (staff) {
       res.json(staff);
     } else {
@@ -113,7 +153,7 @@ const getStaffProfile = async (req, res) => {
 // @access  Private (Staff)
 const getAssignedStudents = async (req, res) => {
     try {
-        const staff = await Staff.findById(req.session.user.id);
+        const staff = await Staff.findById(req.session.user.linkedId);
         if (!staff) {
             return res.status(404).send('Staff not found');
         }
@@ -131,7 +171,7 @@ const getAssignedStudents = async (req, res) => {
 // @access  Private (Staff)
 const getDashboardStats = async (req, res) => {
     try {
-        const staffId = req.session.user.id;
+        const staffId = req.session.user.linkedId;
         const staff = await Staff.findById(staffId);
 
         if (!staff) {
@@ -179,18 +219,99 @@ const changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
     try {
-        const staff = await Staff.findById(req.session.user.id);
+        // Find User by ID (stored in session)
+        const user = await User.findById(req.session.user.id);
 
-        if (staff && (await staff.matchPassword(currentPassword))) {
-            staff.password = newPassword;
-            await staff.save();
+        if (user && (await user.matchPassword(currentPassword))) {
+            user.password = newPassword;
+            user.isFirstLogin = false; // Disable flag after password change
+            await user.save();
             res.json({ message: 'Password updated successfully' });
         } else {
             res.status(401).send('Invalid current password');
         }
     } catch (error) {
-        logger.error(`Error changing password for staff ID: ${req.session.user.id}`, error);
+        logger.error(`Error changing password for user ID: ${req.session.user.id}`, error);
         res.status(500).send('Server error');
+    }
+};
+
+// @desc    Reset staff password (Admin only)
+// @route   PUT /api/staff/:id/reset-password
+// @access  Private (Admin)
+const resetStaffPassword = async (req, res) => {
+    try {
+        const staffId = req.params.id;
+        logger.info(`Attempting to reset password for staffId: ${staffId}`);
+
+        const staff = await Staff.findById(staffId);
+        
+        if (!staff) {
+            logger.warn(`Staff not found for ID: ${staffId}`);
+            return res.status(404).json({ message: 'Staff not found' });
+        }
+
+        // 1. Try to find user by linked Reference ID
+        let user = await User.findOne({ referenceId: staffId });
+        
+        // Generate new random password
+        const newPassword = crypto.randomBytes(4).toString('hex'); // 8 characters
+
+        if (!user) {
+            // 2. If not found by link, try to find by Email (orphan account recovery)
+            user = await User.findOne({ email: staff.email });
+
+            if (user) {
+                // Found a user with this email but not linked (or linked to old). Re-link it.
+                logger.info(`Found unlinked user account for ${staff.email}. Re-linking to staff ${staffId}.`);
+                user.referenceId = staff._id;
+                user.role = 'staff'; // Ensure role is staff
+                // Proceed to update password below
+            } else {
+                // 3. No user found at all. Check for username conflict before creating.
+                const usernameTaken = await User.findOne({ username: staff.email });
+                if (usernameTaken) {
+                     return res.status(400).json({ message: `The username ${staff.email} is already taken by another account.` });
+                }
+
+                // Create User account
+                user = new User({
+                    username: staff.email,
+                    email: staff.email,
+                    password: newPassword,
+                    role: 'staff',
+                    referenceId: staff._id,
+                    isFirstLogin: true,
+                    status: true
+                });
+                logger.info(`Created missing user account for staff ${staff.name} during password reset`);
+                await user.save();
+                
+                return res.json({ 
+                    message: 'Password reset successfully (New Account Created)', 
+                    newPassword: newPassword 
+                });
+            }
+        }
+        
+        // Update existing (or found) user password
+        user.password = newPassword; 
+        user.isFirstLogin = true; 
+        await user.save();
+
+        logger.info(`Password reset for staff ${staff.name} (User: ${user.username}) by Admin`);
+
+        res.json({ 
+            message: 'Password reset successfully', 
+            newPassword: newPassword 
+        });
+
+    } catch (error) {
+        logger.error('Error resetting staff password:', error);
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'A user with this email/username already exists.' });
+        }
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
@@ -204,4 +325,5 @@ module.exports = {
   getAssignedStudents,
   getDashboardStats,
   changePassword,
+  resetStaffPassword,
 };
