@@ -213,3 +213,7 @@
 {"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-01"}
 {"level":"info","message":"Date Range: 2026-01-01T00:00:00.000Z to 2026-01-31T23:59:59.999Z"}
 {"level":"info","message":"Found 4 records."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}

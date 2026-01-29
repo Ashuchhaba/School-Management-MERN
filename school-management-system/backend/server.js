@@ -19,6 +19,8 @@ connectDB().then(() => {
 
 const app = express();
 
+app.set('trust proxy', 1); // Trust first proxy
+
 const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true, // Allow cookies to be sent
@@ -39,6 +41,7 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24, // 1 day
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Required for cross-site cookies
     },
   })
 );
