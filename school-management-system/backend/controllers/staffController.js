@@ -52,6 +52,14 @@ const createStaff = async (req, res) => {
         const staff = new Staff({
             ...req.body,
         });
+
+        // Ensure class_teacher_of is in assigned_classes
+        if (req.body.class_teacher_of) {
+            if (!staff.assigned_classes.includes(req.body.class_teacher_of)) {
+                staff.assigned_classes.push(req.body.class_teacher_of);
+            }
+        }
+
         const createdStaff = await staff.save();
 
         // Generate temporary password
@@ -90,6 +98,17 @@ const updateStaff = async (req, res) => {
             for (const key in req.body) {
                 staff[key] = req.body[key];
             }
+
+            // Ensure class_teacher_of is in assigned_classes
+            if (req.body.class_teacher_of) {
+                // Initialize if undefined (though schema default is [])
+                if (!staff.assigned_classes) staff.assigned_classes = [];
+                
+                if (!staff.assigned_classes.includes(req.body.class_teacher_of)) {
+                    staff.assigned_classes.push(req.body.class_teacher_of);
+                }
+            }
+
             const updatedStaff = await staff.save();
 
             // Sync status with User account if changed
@@ -158,7 +177,13 @@ const getAssignedStudents = async (req, res) => {
             return res.status(404).send('Staff not found');
         }
 
-        const students = await Student.find({ class: { $in: staff.assigned_classes } });
+        // Combine assigned_classes and class_teacher_of
+        let classesToFetch = [...(staff.assigned_classes || [])];
+        if (staff.class_teacher_of && !classesToFetch.includes(staff.class_teacher_of)) {
+            classesToFetch.push(staff.class_teacher_of);
+        }
+
+        const students = await Student.find({ class: { $in: classesToFetch } });
         res.json(students);
     } catch (error) {
         logger.error(`Error fetching assigned students for staff ID: ${req.session.user.id}`, error);
@@ -179,9 +204,17 @@ const getDashboardStats = async (req, res) => {
         }
 
         const assignedClasses = staff.assigned_classes || [];
+        let studentCountQuery = {};
+
+        // If the staff is a class teacher, count students only from that class for the main stat
+        if (staff.class_teacher_of) {
+            studentCountQuery = { class: staff.class_teacher_of };
+        } else {
+            studentCountQuery = { class: { $in: assignedClasses } };
+        }
         
-        // Total Students in assigned classes
-        const totalStudents = await Student.countDocuments({ class: { $in: assignedClasses } });
+        // Total Students in the prioritized class(es)
+        const totalStudents = await Student.countDocuments(studentCountQuery);
 
         // Attendance Today (Present)
         const startOfDay = new Date();
@@ -189,11 +222,12 @@ const getDashboardStats = async (req, res) => {
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
 
-        const attendanceToday = await StudentAttendance.countDocuments({
-            class: { $in: assignedClasses },
-            date: { $gte: startOfDay, $lte: endOfDay },
-            status: 'Present'
-        });
+        // Use the same priority logic for attendance query
+        const attendanceQuery = { ...studentCountQuery }; // Reuse the query built for students
+        attendanceQuery.date = { $gte: startOfDay, $lte: endOfDay };
+        attendanceQuery.status = 'Present';
+
+        const attendanceToday = await StudentAttendance.countDocuments(attendanceQuery);
 
         // Last Salary
         const lastSalaryRecord = await Salary.findOne({ staff_id: staffId }).sort({ payment_month: -1 });
@@ -203,7 +237,8 @@ const getDashboardStats = async (req, res) => {
             assignedClasses: assignedClasses.length,
             totalStudents,
             attendanceToday,
-            lastSalary
+            lastSalary,
+            classTeacherOf: staff.class_teacher_of || 'N/A'
         });
 
     } catch (error) {

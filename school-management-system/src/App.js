@@ -25,6 +25,14 @@ import StaffHomeworkPage from './pages/StaffHomeworkPage';
 import StaffExamsPage from './pages/StaffExamsPage';
 import StaffLeavePage from './pages/StaffLeavePage';
 import StaffSalaryPage from './pages/StaffSalaryPage';
+import AdminNoticeBoardPage from './pages/AdminNoticeBoardPage';
+import StaffNoticeBoardPage from './pages/StaffNoticeBoardPage';
+import StudentDashboardPage from './pages/StudentDashboardPage';
+import StudentProfilePage from './pages/StudentProfilePage';
+import StudentAttendancePage from './pages/StudentAttendancePage';
+import StudentFeesPage from './pages/StudentFeesPage';
+import StudentExamsPage from './pages/StudentExamsPage';
+import StudentNoticeBoardPage from './pages/StudentNoticeBoardPage';
 import './styles/style-blue.css';
 import './styles/admin-style.css';
 import './styles/PopupModal.css';
@@ -60,6 +68,7 @@ const AppContent = () => {
           <Route path="/staff" element={<StaffDetailsPage />} />
           <Route path="/fees" element={<FeesManagementPage />} />
           <Route path="/staff-payment" element={<StaffPaymentPage />} />
+          <Route path="/notice-board" element={<AdminNoticeBoardPage />} />
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/admin/reports/students" element={<StudentReportPage />} />
           <Route path="/admin/reports/staff" element={<StaffReportPage />} />
@@ -71,6 +80,7 @@ const AppContent = () => {
         {/* Staff Routes */}
         <Route element={<ProtectedRoute allowedRoles={['staff']} />}>
           <Route path="/staff/dashboard" element={<StaffDashboardPage />} />
+          <Route path="/staff/notices" element={<StaffNoticeBoardPage />} />
           <Route path="/staff/profile" element={<StaffProfilePage />} />
           <Route path="/staff/students" element={<StaffStudentListPage />} />
           <Route path="/staff/attendance" element={<StaffAttendancePage />} />
@@ -78,6 +88,16 @@ const AppContent = () => {
           <Route path="/staff/exams" element={<StaffExamsPage />} />
           <Route path="/staff/leave" element={<StaffLeavePage />} />
           <Route path="/staff/salary" element={<StaffSalaryPage />} />
+        </Route>
+
+        {/* Student Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+          <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+          <Route path="/student/profile" element={<StudentProfilePage />} />
+          <Route path="/student/attendance" element={<StudentAttendancePage />} />
+          <Route path="/student/fees" element={<StudentFeesPage />} />
+          <Route path="/student/exams" element={<StudentExamsPage />} />
+          <Route path="/student/notices" element={<StudentNoticeBoardPage />} />
         </Route>
       </Routes>
     </Router>

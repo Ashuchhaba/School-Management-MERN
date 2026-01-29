@@ -7,7 +7,7 @@ const logger = require('../config/logger');
 const saveMarks = async (req, res) => {
     try {
         const { class: className, subject, examType, marks } = req.body;
-        const marked_by = req.session.user.id;
+        const marked_by = req.session.user.linkedId; // Use linkedId for Staff reference
 
         const operations = Object.keys(marks).map(student_id => ({
             updateOne: {
@@ -22,7 +22,10 @@ const saveMarks = async (req, res) => {
             },
         }));
 
-        await ExamMarks.bulkWrite(operations);
+        if (operations.length > 0) {
+            await ExamMarks.bulkWrite(operations);
+        }
+        
         res.status(200).json({ message: 'Marks saved successfully' });
     } catch (error) {
         logger.error('Error saving marks:', error);
@@ -48,7 +51,22 @@ const getMarks = async (req, res) => {
     }
 };
 
+// @desc    Get exam marks for logged-in student
+// @route   GET /api/exams/my-marks
+// @access  Private (Student)
+const getMyMarks = async (req, res) => {
+    try {
+        const studentId = req.session.user.linkedId;
+        const marks = await ExamMarks.find({ student_id: studentId }).sort({ exam_type: 1, subject: 1 });
+        res.json(marks);
+    } catch (error) {
+        logger.error('Error fetching student marks:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 module.exports = {
     saveMarks,
     getMarks,
+    getMyMarks
 };

@@ -1,13 +1,68 @@
 const Student = require('../models/studentModel');
+const User = require('../models/userModel');
 const Admissions = require('../models/admissionsModel');
 const Activity = require('../models/activityModel');
+const StudentAttendance = require('../models/studentAttendanceModel');
+const Fee = require('../models/feeModel');
+const FeeStructure = require('../models/feeStructureModel');
+const crypto = require('crypto');
 
-// @desc    Get all students
+// @desc    Get dashboard stats for logged-in student
+// @route   GET /api/students/dashboard-stats
+// @access  Private (Student)
+const getStudentDashboardStats = async (req, res) => {
+    try {
+        const studentId = req.session.user.linkedId;
+        const student = await Student.findById(studentId);
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // Attendance Calculation
+        const totalAttendanceDays = await StudentAttendance.countDocuments({ student_id: studentId });
+        const presentDays = await StudentAttendance.countDocuments({ student_id: studentId, status: 'Present' });
+        const attendancePercentage = totalAttendanceDays > 0 ? ((presentDays / totalAttendanceDays) * 100).toFixed(1) : 0;
+
+        // Fees Calculation
+        // 1. Get total expected fees from Fee Structure for student's class
+        const feeStructures = await FeeStructure.find({ class: student.class });
+        const totalExpectedFee = feeStructures.reduce((acc, fs) => acc + (fs.total_amount || 0), 0);
+
+        // 2. Get total paid fees
+        const fees = await Fee.find({ student_id: studentId });
+        const totalPaidFee = fees.reduce((acc, fee) => acc + (fee.paid_amount || 0), 0);
+
+        // 3. Calculate Due
+        const feeDue = Math.max(0, totalExpectedFee - totalPaidFee);
+
+        res.json({
+            class: student.class,
+            section: student.section,
+            attendancePercentage,
+            feeDue,
+            nextExam: 'Coming Soon', // Placeholder
+            studentName: student.name
+        });
+
+    } catch (error) {
+        console.error('Error fetching student dashboard stats:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get all students, optionally filtered by class
 // @route   GET /api/students
 // @access  Public
 const getStudents = async (req, res) => {
   try {
-    const students = await Student.find({}).lean();
+    const { class: className } = req.query;
+    let query = {};
+    if (className) {
+      query.class = className;
+    }
+
+    const students = await Student.find(query).lean();
     const formattedStudents = students.map(student => ({
       ...student,
       rollNo: student.roll_no,
@@ -49,14 +104,50 @@ const getStudentById = async (req, res) => {
 // @access  Private
 const createStudent = async (req, res) => {
   try {
+    const { gr_no, email } = req.body;
+
+    // Check if user already exists (by gr_no or email if provided)
+    const existingUserQuery = [{ username: gr_no }];
+    if (email) existingUserQuery.push({ email: email });
+    
+    const userExists = await User.findOne({ $or: existingUserQuery });
+    
+    if (userExists) {
+        return res.status(400).json({ message: 'User account with this Admission No or Email already exists.' });
+    }
+
     const student = new Student({
       ...req.body,
     });
     const createdStudent = await student.save();
-    res.status(201).json(createdStudent);
+
+    // Generate temporary password
+    const tempPassword = crypto.randomBytes(4).toString('hex'); // 8 characters
+
+    // Create User account
+    const user = new User({
+        username: gr_no, // Use Admission Number as username
+        email: email || undefined, // Email is optional
+        password: tempPassword,
+        role: 'student',
+        referenceId: createdStudent._id,
+        isFirstLogin: true,
+        status: createdStudent.is_active
+    });
+
+    await user.save();
+
+    res.status(201).json({
+        student: createdStudent,
+        tempPassword: tempPassword
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    if (error.code === 11000) {
+        res.status(400).json({ message: 'Duplicate Admission No or other unique field.' });
+    } else {
+        res.status(500).json({ message: 'Server Error' });
+    }
   }
 };
 
@@ -72,6 +163,15 @@ const updateStudent = async (req, res) => {
         student[key] = req.body[key];
       }
       const updatedStudent = await student.save();
+
+      // Sync status with User account if changed
+      if (req.body.is_active !== undefined) {
+           await User.updateOne(
+              { referenceId: student._id },
+              { status: req.body.is_active }
+           );
+      }
+
       const plainStudent = updatedStudent.toObject();
       const formattedStudent = {
         ...plainStudent,
@@ -97,6 +197,8 @@ const deleteStudent = async (req, res) => {
     const student = await Student.findById(req.params.id);
     if (student) {
       await student.deleteOne();
+      // Delete associated user
+      await User.deleteOne({ referenceId: student._id });
       res.json({ message: 'Student removed' });
     } else {
       res.status(404).json({ message: 'Student not found' });
@@ -189,4 +291,121 @@ const approveAdmission = async (req, res) => {
   }
 };
 
-module.exports = { getStudents, getStudentById, createStudent, updateStudent, deleteStudent, getStudentCountByClass, approveAdmission };
+// @desc    Reset student password (Admin only)
+// @route   PUT /api/students/:id/reset-password
+// @access  Private (Admin)
+const resetStudentPassword = async (req, res) => {
+    try {
+        const studentId = req.params.id;
+        const student = await Student.findById(studentId);
+        
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // 1. Try to find user by linked Reference ID
+        let user = await User.findOne({ referenceId: studentId });
+        
+        // Generate new random password
+        const newPassword = crypto.randomBytes(4).toString('hex'); // 8 characters
+
+        if (!user) {
+            // 2. If not found by link, try to find by Username (gr_no)
+            user = await User.findOne({ username: student.gr_no });
+
+            if (user) {
+                // Found a user with this gr_no but not linked. Re-link it.
+                user.referenceId = student._id;
+                user.role = 'student'; 
+            } else {
+                // 3. No user found. Check for conflicts before creating.
+                // We already checked username above. Check email if exists.
+                if (student.email) {
+                    const emailTaken = await User.findOne({ email: student.email });
+                    if (emailTaken) {
+                         return res.status(400).json({ message: `The email ${student.email} is already associated with another user account.` });
+                    }
+                }
+
+                // Create User account
+                user = new User({
+                    username: student.gr_no,
+                    email: student.email || undefined,
+                    password: newPassword,
+                    role: 'student',
+                    referenceId: student._id,
+                    isFirstLogin: true,
+                    status: student.is_active
+                });
+            }
+        }
+        
+        // Update existing (or found) user password
+        user.password = newPassword; 
+        user.isFirstLogin = true; 
+        await user.save();
+
+        res.json({ 
+            message: 'Password reset successfully', 
+            newPassword: newPassword 
+        });
+
+    } catch (error) {
+        console.error('Error resetting student password:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Change student password
+// @route   PUT /api/students/change-password
+// @access  Private (Student)
+const changePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+        const user = await User.findById(req.session.user.id);
+
+        if (user && (await user.matchPassword(currentPassword))) {
+            user.password = newPassword;
+            user.isFirstLogin = false;
+            await user.save();
+            res.json({ message: 'Password updated successfully' });
+        } else {
+            res.status(401).send('Invalid current password');
+        }
+    } catch (error) {
+        console.error(`Error changing password for user ID: ${req.session.user.id}`, error);
+        res.status(500).send('Server error');
+    }
+};
+
+// @desc    Get logged-in student profile
+// @route   GET /api/students/profile
+// @access  Private (Student)
+const getStudentProfile = async (req, res) => {
+    try {
+        const student = await Student.findById(req.session.user.linkedId);
+        if (student) {
+            res.json(student);
+        } else {
+            res.status(404).json({ message: 'Student not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+module.exports = { 
+    getStudents, 
+    getStudentById, 
+    createStudent, 
+    updateStudent, 
+    deleteStudent, 
+    getStudentCountByClass, 
+    approveAdmission, 
+    resetStudentPassword,
+    getStudentDashboardStats,
+    changePassword,
+    getStudentProfile
+};

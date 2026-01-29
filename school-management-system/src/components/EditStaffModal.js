@@ -104,7 +104,27 @@ function EditStaffModal({ staff, onSave, onClose }) {
                 <div className="col-md-6">
                   <div className="mb-3">
                     <label className="form-label">Class Teacher Of</label>
-                    <input type="text" className="form-control" name="class_teacher_of" value={formData.class_teacher_of} onChange={handleChange} />
+                    <select 
+                      className="form-select" 
+                      name="class_teacher_of" 
+                      value={formData.class_teacher_of || ''} 
+                      onChange={handleChange}
+                    >
+                      <option value="">None</option>
+                      <option value="Nursery">Nursery</option>
+                      <option value="LKG">LKG</option>
+                      <option value="UKG">UKG</option>
+                      <option value="1st">1st</option>
+                      <option value="2nd">2nd</option>
+                      <option value="3rd">3rd</option>
+                      <option value="4th">4th</option>
+                      <option value="5th">5th</option>
+                      <option value="6th">6th</option>
+                      <option value="7th">7th</option>
+                      <option value="8th">8th</option>
+                      <option value="9th">9th</option>
+                      <option value="10th">10th</option>
+                    </select>
                   </div>
                 </div>
               </div>

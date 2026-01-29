@@ -44,6 +44,10 @@ function Sidebar() {
           <i className="fas fa-credit-card"></i>
           Staff Payment
         </NavLink>
+        <NavLink to="/notice-board" className="nav-link">
+          <i className="fas fa-bullhorn"></i>
+          Notice Board
+        </NavLink>
         <NavLink to="/admissions" className="nav-link">
           <i className="fas fa-user-plus"></i>
           Admissions

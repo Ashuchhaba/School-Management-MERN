@@ -92,8 +92,14 @@ function StudentDetailsPage() {
         modalInstance.hide();
       }
 
-      await api.post('/api/students', newStudentData);
-      showPopup('Student added successfully!');
+      const res = await api.post('/api/students', newStudentData);
+      
+      if (res.data.tempPassword) {
+        showPopup(`Student added successfully! Temporary Password: ${res.data.tempPassword} (Please save this!)`);
+      } else {
+        showPopup('Student added successfully!');
+      }
+
       fetchStudents(); // Refresh the list
       setNewStudentData(initialNewStudentData); // Reset form
       setErrors({}); // Clear errors

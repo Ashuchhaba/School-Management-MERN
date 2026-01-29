@@ -57,6 +57,8 @@ app.use('/api/attendance', protect, setNoCache, require('./routes/attendanceRout
 app.use('/api/homework', protect, setNoCache, require('./routes/homeworkRoutes'));
 app.use('/api/exams', protect, setNoCache, require('./routes/examRoutes'));
 app.use('/api/leave', protect, setNoCache, require('./routes/leaveRoutes'));
+app.use('/api/notices', protect, setNoCache, require('./routes/noticeRoutes'));
+
 
 
 app.get('/', (req, res) => {

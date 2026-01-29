@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-function StaffSidebar() {
+function StudentSidebar() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -18,39 +18,35 @@ function StaffSidebar() {
           <i className="fas fa-graduation-cap text-primary me-2" style={{ fontSize: '1.5rem' }}></i>
           <div>
             <h4 className="text-white">SATYAM STARS</h4>
-            <small>International School</small>
+            <small>Student Portal</small>
           </div>
         </div>
       </div>
 
       <div className="sidebar-menu">
-        <NavLink to="/staff/dashboard" className="nav-link">
+        <NavLink to="/student/dashboard" className="nav-link">
           <i className="fas fa-tachometer-alt"></i>
           Dashboard
         </NavLink>
-        <NavLink to="/staff/notices" className="nav-link">
-          <i className="fas fa-bullhorn"></i>
-          Notice Board
-        </NavLink>
-        <NavLink to="/staff/profile" className="nav-link">
+        <NavLink to="/student/profile" className="nav-link">
           <i className="fas fa-user"></i>
           Profile
         </NavLink>
-        <NavLink to="/staff/students" className="nav-link">
-          <i className="fas fa-user-graduate"></i>
-          Students
-        </NavLink>
-        <NavLink to="/staff/attendance" className="nav-link">
+        <NavLink to="/student/attendance" className="nav-link">
           <i className="fas fa-calendar-check"></i>
           Attendance
         </NavLink>
-        <NavLink to="/staff/exams" className="nav-link">
-          <i className="fas fa-pen-alt"></i>
-          Exams & Marks
-        </NavLink>
-        <NavLink to="/staff/salary" className="nav-link">
+        <NavLink to="/student/fees" className="nav-link">
           <i className="fas fa-money-bill-wave"></i>
-          Salary
+          Fees
+        </NavLink>
+        <NavLink to="/student/exams" className="nav-link">
+          <i className="fas fa-file-alt"></i>
+          Exams & Results
+        </NavLink>
+        <NavLink to="/student/notices" className="nav-link">
+          <i className="fas fa-bullhorn"></i>
+          Notices
         </NavLink>
         <div className="mt-4 pt-4" style={{ borderTop: '1px solid #374151' }}>
           <button onClick={handleLogout} className="nav-link text-danger" style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left' }}>
@@ -63,4 +59,4 @@ function StaffSidebar() {
   );
 }
 
-export default StaffSidebar;
+export default StudentSidebar;

@@ -19,6 +19,21 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET api/fees/my-fees
+// @desc    Get fees for logged-in student
+router.get('/my-fees', async (req, res) => {
+  try {
+    const studentId = req.session.user.linkedId;
+    const fees = await Fee.find({ student_id: studentId })
+      .populate('fee_structure_id')
+      .sort({ payment_date: -1 });
+    res.json(fees);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET api/fees/total
 // @desc    Get total fees paid
 router.get('/total', async (req, res) => {

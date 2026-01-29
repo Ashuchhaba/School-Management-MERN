@@ -174,6 +174,22 @@ function EditStudentModal({ student, onSave, onClose }) {
                   </div>
                 </div>
               </div>
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label className="form-label">Status</label>
+                    <select
+                      className="form-select"
+                      name="is_active"
+                      value={formData.is_active}
+                      onChange={(e) => setFormData({ ...formData, is_active: e.target.value === 'true' })}
+                    >
+                      <option value={true}>Active</option>
+                      <option value={false}>Inactive</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
               <div className="mb-3">
                 <label className="form-label">Address</label>
                 <textarea className="form-control" name="address" rows="3" value={formData.address} onChange={handleChange} required></textarea>

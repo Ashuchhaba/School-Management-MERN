@@ -24,6 +24,12 @@ function LoginPage() {
         } else {
             navigate('/staff/dashboard');
         }
+      } else if (loggedInUser.role === 'student') {
+        if (loggedInUser.isFirstLogin) {
+            navigate('/student/profile', { state: { changePassword: true } });
+        } else {
+            navigate('/student/dashboard');
+        }
       } else {
         // Handle other roles or default redirect
         navigate('/');
@@ -42,7 +48,7 @@ function LoginPage() {
       case 'Staff':
         return 'Email';
       case 'Student':
-        return 'GR No.';
+        return 'Admission No.';
       case 'Admin':
       default:
         return 'Username';

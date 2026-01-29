@@ -9,15 +9,31 @@ function StaffStudentListPage() {
   const [search, setSearch] = useState('');
   const [filterClass, setFilterClass] = useState('');
 
+  const allStandardClasses = [
+    "Nursery", "LKG", "UKG", 
+    "1st", "2nd", "3rd", "4th", "5th", 
+    "6th", "7th", "8th", "9th", "10th"
+  ];
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [studentsRes, profileRes] = await Promise.all([
-          api.get('/api/staff/students'),
+          api.get('/api/students'), // Fetch ALL students
           api.get('/api/staff/profile')
         ]);
         setStudents(studentsRes.data);
-        setAssignedClasses(profileRes.data.assigned_classes);
+        
+        // Use all standard classes for the dropdown
+        setAssignedClasses(allStandardClasses);
+
+        // Set default filter to the class they are a teacher of
+        if (profileRes.data.class_teacher_of) {
+            setFilterClass(profileRes.data.class_teacher_of);
+        } else {
+            // Default to 'All Classes' (empty string) or the first class
+            // setFilterClass(''); // This shows all students initially
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -30,8 +46,8 @@ function StaffStudentListPage() {
 
   const filteredStudents = students
     .filter(student =>
-      student.name.toLowerCase().includes(search.toLowerCase()) ||
-      student.roll_no.toString().includes(search)
+      (student.name?.toLowerCase() || '').includes(search.toLowerCase()) ||
+      (student.roll_no?.toString() || '').includes(search)
     )
     .filter(student =>
       filterClass ? student.class === filterClass : true

@@ -48,7 +48,7 @@ function StaffSalaryPage() {
                       <td>{new Date(salary.payment_month).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</td>
                       <td>{salary.total_days_present}</td>
                       <td>{salary.total_days_in_month}</td>
-                      <td>${salary.calculated_salary.toFixed(2)}</td>
+                      <td>₹{salary.calculated_salary.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                       <td>{salary.paid_on ? new Date(salary.paid_on).toLocaleDateString() : 'N/A'}</td>
                       <td>{salary.notes}</td>
                     </tr>
