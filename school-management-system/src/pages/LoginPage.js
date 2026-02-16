@@ -112,20 +112,9 @@ function LoginPage() {
                     </div>
                   </div>
 
-                  <div className="mb-3 form-check">
-                    <input type="checkbox" className="form-check-input" id="rememberMe" />
-                    <label className="form-check-label" htmlFor="rememberMe">
-                      Remember me
-                    </label>
-                  </div>
-
                   <button type="submit" className="btn btn-primary w-100 mb-3">
                     <i className="fas fa-sign-in-alt me-2"></i>Login as {role}
                   </button>
-
-                  <div className="text-center">
-                    <a href="/" className="text-muted">Forgot Password?</a>
-                  </div>
                 </form>
 
                 <div className="login-footer text-center mt-4">

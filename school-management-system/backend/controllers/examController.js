@@ -1,4 +1,6 @@
 const ExamMarks = require('../models/examMarksModel');
+const ExamSchedule = require('../models/examScheduleModel');
+const Student = require('../models/studentModel');
 const logger = require('../config/logger');
 
 // @desc    Save exam marks for a class
@@ -65,8 +67,88 @@ const getMyMarks = async (req, res) => {
     }
 };
 
+// @desc    Create exam schedule
+// @route   POST /api/exams/schedule
+// @access  Private (Staff)
+const createExamSchedule = async (req, res) => {
+    try {
+        const { class: className, exam_type, subject, date, start_time, end_time } = req.body;
+        
+        const schedule = new ExamSchedule({
+            class: className,
+            exam_type,
+            subject,
+            date,
+            start_time,
+            end_time
+        });
+
+        const createdSchedule = await schedule.save();
+        res.status(201).json(createdSchedule);
+    } catch (error) {
+        logger.error('Error creating exam schedule:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get exam schedule for a class
+// @route   GET /api/exams/schedule
+// @access  Private (Staff/Student)
+const getExamSchedule = async (req, res) => {
+    try {
+        const { class: className } = req.query;
+        const schedules = await ExamSchedule.find({ class: className }).sort({ date: 1, start_time: 1 });
+        res.json(schedules);
+    } catch (error) {
+        logger.error('Error fetching exam schedule:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Delete exam schedule
+// @route   DELETE /api/exams/schedule/:id
+// @access  Private (Staff)
+const deleteExamSchedule = async (req, res) => {
+    try {
+        const schedule = await ExamSchedule.findById(req.params.id);
+        if (schedule) {
+            await schedule.deleteOne();
+            res.json({ message: 'Schedule removed' });
+        } else {
+            res.status(404).json({ message: 'Schedule not found' });
+        }
+    } catch (error) {
+        logger.error('Error deleting exam schedule:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get exam schedule for logged-in student
+// @route   GET /api/exams/my-schedule
+// @access  Private (Student)
+const getMySchedule = async (req, res) => {
+    try {
+        const studentId = req.session.user.linkedId;
+        const student = await Student.findById(studentId);
+        
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        const schedules = await ExamSchedule.find({ class: student.class }).sort({ date: 1, start_time: 1 });
+        res.json(schedules);
+    } catch (error) {
+        logger.error('Error fetching student exam schedule:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 module.exports = {
     saveMarks,
     getMarks,
-    getMyMarks
+    getMyMarks,
+    createExamSchedule,
+    getExamSchedule,
+    deleteExamSchedule,
+    getMySchedule
 };

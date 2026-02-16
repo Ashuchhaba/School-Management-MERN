@@ -39,7 +39,7 @@ function Header() {
             </li>
           </ul>
           <Link to="/login" className="btn btn-primary">
-            <i className="fas fa-user-shield me-2"></i>Admin Login
+            <i className="fas fa-sign-in-alt me-2"></i>Login
           </Link>
         </div>
       </div>

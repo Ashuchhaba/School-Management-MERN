@@ -217,3 +217,17 @@
 {"level":"info","message":"User admin logged in successfully as admin."}
 {"level":"info","message":"User undefined logged out successfully."}
 {"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-02"}
+{"level":"info","message":"Date Range: 2026-02-01T00:00:00.000Z to 2026-02-28T23:59:59.999Z"}
+{"level":"info","message":"Found 1 records."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-02"}
+{"level":"info","message":"Date Range: 2026-02-01T00:00:00.000Z to 2026-02-28T23:59:59.999Z"}
+{"level":"info","message":"Found 1 records."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: 12042"}
+{"level":"info","message":"User 12042 logged in successfully as student."}
