@@ -33,6 +33,7 @@ import StudentAttendancePage from './pages/StudentAttendancePage';
 import StudentFeesPage from './pages/StudentFeesPage';
 import StudentExamsPage from './pages/StudentExamsPage';
 import StudentNoticeBoardPage from './pages/StudentNoticeBoardPage';
+import ChatPage from './pages/ChatPage';
 import './styles/style-blue.css';
 import './styles/admin-style.css';
 import './styles/PopupModal.css';
@@ -88,6 +89,7 @@ const AppContent = () => {
           <Route path="/staff/exams" element={<StaffExamsPage />} />
           <Route path="/staff/leave" element={<StaffLeavePage />} />
           <Route path="/staff/salary" element={<StaffSalaryPage />} />
+          <Route path="/staff/chat" element={<ChatPage />} />
         </Route>
 
         {/* Student Routes */}
@@ -98,6 +100,7 @@ const AppContent = () => {
           <Route path="/student/fees" element={<StudentFeesPage />} />
           <Route path="/student/exams" element={<StudentExamsPage />} />
           <Route path="/student/notices" element={<StudentNoticeBoardPage />} />
+          <Route path="/student/chat" element={<ChatPage />} />
         </Route>
       </Routes>
     </Router>

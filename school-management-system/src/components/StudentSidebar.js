@@ -48,6 +48,10 @@ function StudentSidebar() {
           <i className="fas fa-bullhorn"></i>
           Notices
         </NavLink>
+        <NavLink to="/student/chat" className="nav-link">
+          <i className="fas fa-comments"></i>
+          Doubt Chat
+        </NavLink>
         <div className="mt-4 pt-4" style={{ borderTop: '1px solid #374151' }}>
           <button onClick={handleLogout} className="nav-link text-danger" style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left' }}>
             <i className="fas fa-sign-out-alt"></i>

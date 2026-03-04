@@ -18,6 +18,18 @@ connectDB().then(() => {
 });
 
 const app = express();
+const http = require('http');
+const { Server } = require('socket.io');
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true
+  }
+});
+
+const Message = require('./models/messageModel');
+const Chat = require('./models/chatModel');
 
 app.set('trust proxy', 1); // Trust first proxy
 
@@ -61,8 +73,64 @@ app.use('/api/homework', protect, setNoCache, require('./routes/homeworkRoutes')
 app.use('/api/exams', protect, setNoCache, require('./routes/examRoutes'));
 app.use('/api/leave', protect, setNoCache, require('./routes/leaveRoutes'));
 app.use('/api/notices', protect, setNoCache, require('./routes/noticeRoutes'));
+app.use('/api/chat', require('./routes/chatRoutes'));
 
+// Socket.io Logic
+const userSockets = new Map(); // userId -> socketId
 
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  socket.on('join', (userId) => {
+    socket.join(userId); // Join a room named after the user ID
+    userSockets.set(userId, socket.id);
+    console.log(`User ${userId} joined their room`);
+  });
+
+  socket.on('sendMessage', async (data) => {
+    const { chatId, senderId, receiverId, text } = data;
+    console.log(`Socket: Sending message from ${senderId} to ${receiverId} in chat ${chatId}`);
+    try {
+      const newMessage = new Message({
+        chatId,
+        senderId,
+        receiverId,
+        text
+      });
+      const savedMessage = await newMessage.save();
+
+      // Update Chat lastMessage
+      await Chat.findByIdAndUpdate(chatId, {
+        lastMessage: savedMessage._id,
+        updatedAt: Date.now()
+      });
+
+      // Emit to both sender and receiver
+      io.to(senderId).to(receiverId).emit('receiveMessage', savedMessage);
+      
+      // Also emit a notification to the receiver room
+      io.to(receiverId).emit('notification', {
+          type: 'new_message',
+          chatId,
+          senderId,
+          text: text.substring(0, 50)
+      });
+
+    } catch (err) {
+      console.error('Error saving message:', err);
+    }
+  });
+
+  socket.on('typing', (data) => {
+    const { receiverId, senderId, isTyping } = data;
+    io.to(receiverId).emit('displayTyping', { senderId, isTyping });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+    // Remove from map if needed
+  });
+});
 
 app.get('/', (req, res) => {
   res.send('Server is running');
@@ -70,6 +138,6 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -52,6 +52,10 @@ function StaffSidebar() {
           <i className="fas fa-money-bill-wave"></i>
           Salary
         </NavLink>
+        <NavLink to="/staff/chat" className="nav-link">
+          <i className="fas fa-comments"></i>
+          Doubt Chat
+        </NavLink>
         <div className="mt-4 pt-4" style={{ borderTop: '1px solid #374151' }}>
           <button onClick={handleLogout} className="nav-link text-danger" style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left' }}>
             <i className="fas fa-sign-out-alt"></i>
