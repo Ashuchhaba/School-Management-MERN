@@ -141,10 +141,58 @@ const markMessagesAsRead = async (req, res) => {
   }
 };
 
+// @desc    Edit a message
+// @route   PUT /api/chat/message/:messageId
+const editMessage = async (req, res) => {
+  const { text } = req.body;
+  const myId = req.session.user.id;
+
+  try {
+    const message = await Message.findById(req.params.messageId);
+    if (!message) return res.status(404).json({ message: 'Message not found' });
+
+    // Security: Only sender can edit
+    if (message.senderId.toString() !== myId.toString()) {
+      return res.status(403).json({ message: 'Unauthorized to edit this message' });
+    }
+
+    message.text = text;
+    await message.save();
+    res.status(200).json(message);
+  } catch (error) {
+    logger.error('Error in editMessage:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Delete a message
+// @route   DELETE /api/chat/message/:messageId
+const deleteMessage = async (req, res) => {
+  const myId = req.session.user.id;
+
+  try {
+    const message = await Message.findById(req.params.messageId);
+    if (!message) return res.status(404).json({ message: 'Message not found' });
+
+    // Security: Only sender can delete
+    if (message.senderId.toString() !== myId.toString()) {
+      return res.status(403).json({ message: 'Unauthorized to delete this message' });
+    }
+
+    await message.deleteOne();
+    res.status(200).json({ message: 'Message deleted' });
+  } catch (error) {
+    logger.error('Error in deleteMessage:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 module.exports = {
   getOrCreateChat,
   getMyChats,
   getChatMessages,
   getStaffListForChat,
-  markMessagesAsRead
+  markMessagesAsRead,
+  editMessage,
+  deleteMessage
 };

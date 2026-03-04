@@ -19,6 +19,8 @@ function ChatPage() {
   const [otherUserTyping, setOtherUserTyping] = useState(false);
   const [activeChat, setActiveChat] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editingMessage, setEditingMessage] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   
   const socket = useRef();
   const messagesEndRef = useRef(null);
@@ -127,12 +129,32 @@ function ChatPage() {
       }
     };
 
+    const onMessageEdited = (data) => {
+        if (data.chatId === activeChat?._id) {
+            setMessages(prev => prev.map(m => 
+                m._id === data.messageId ? { ...m, text: data.newText, isEdited: true } : m
+            ));
+        }
+    };
+
+    const onMessageDeleted = (data) => {
+        if (data.chatId === activeChat?._id) {
+            setMessages(prev => prev.map(m => 
+                m._id === data.messageId ? { ...m, text: 'This message was deleted', isDeleted: true } : m
+            ));
+        }
+    };
+
     socket.current.on('receiveMessage', onReceiveMessage);
     socket.current.on('displayTyping', onDisplayTyping);
+    socket.current.on('messageEdited', onMessageEdited);
+    socket.current.on('messageDeleted', onMessageDeleted);
 
     return () => {
       socket.current.off('receiveMessage', onReceiveMessage);
       socket.current.off('displayTyping', onDisplayTyping);
+      socket.current.off('messageEdited', onMessageEdited);
+      socket.current.off('messageDeleted', onMessageDeleted);
     };
   }, [user, activeChat?._id, selectedContact?._id]);
 
@@ -179,9 +201,51 @@ function ChatPage() {
     }
   };
 
-  const handleSendMessage = (e) => {
+  const handleEditClick = (msg) => {
+    setIsEditMode(true);
+    setEditingMessage(msg);
+    setInputText(msg.text);
+  };
+
+  const handleDeleteMessage = async (msgId) => {
+    if (!window.confirm('Delete this message for everyone?')) return;
+    try {
+        await api.delete(`/api/chat/message/${msgId}`);
+        // Emit to socket
+        socket.current.emit('deleteMessage', {
+            chatId: activeChat._id,
+            messageId: msgId,
+            senderId: user._id,
+            receiverId: selectedContact._id
+        });
+    } catch (err) {
+        console.error('Error deleting message:', err);
+    }
+  };
+
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!inputText.trim() || !activeChat) return;
+
+    if (isEditMode && editingMessage) {
+        try {
+            await api.put(`/api/chat/message/${editingMessage._id}`, { text: inputText });
+            // Emit to socket
+            socket.current.emit('editMessage', {
+                chatId: activeChat._id,
+                messageId: editingMessage._id,
+                senderId: user._id,
+                receiverId: selectedContact._id,
+                newText: inputText
+            });
+            setIsEditMode(false);
+            setEditingMessage(null);
+            setInputText('');
+        } catch (err) {
+            console.error('Error editing message:', err);
+        }
+        return;
+    }
 
     const messageData = {
       chatId: activeChat._id,
@@ -303,9 +367,20 @@ function ChatPage() {
                       key={msg._id} 
                       className={`message-bubble ${msg.senderId === user._id ? 'message-sent' : 'message-received'}`}
                     >
-                      <div className="message-text">{msg.text}</div>
-                      <div className="message-time">
-                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      <div className="msg-bubble-content">
+                        <div className="d-flex justify-content-between align-items-start">
+                          <div className={`message-text ${msg.isDeleted ? 'text-muted fst-italic' : ''}`}>{msg.text}</div>
+                          {msg.senderId === user._id && !msg.isDeleted && (
+                              <div className="message-actions ms-2 opacity-0 hover-opacity-100 transition-opacity">
+                                  <i className="fas fa-pen fa-xs text-muted me-2 cursor-pointer" onClick={() => handleEditClick(msg)}></i>
+                                  <i className="fas fa-trash fa-xs text-danger cursor-pointer" onClick={() => handleDeleteMessage(msg._id)}></i>
+                              </div>
+                          )}
+                        </div>
+                        <div className="message-time">
+                          {msg.isEdited && <span className="me-1 fst-italic">(edited)</span>}
+                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -313,6 +388,12 @@ function ChatPage() {
                 </div>
 
                 <form className="chat-input-area" onSubmit={handleSendMessage}>
+                  {isEditMode && (
+                      <div className="edit-indicator position-absolute bg-white border p-1 rounded" style={{marginTop: '-60px'}}>
+                          <small className="text-primary me-2">Editing message...</small>
+                          <i className="fas fa-times cursor-pointer text-danger" onClick={() => { setIsEditMode(false); setInputText(''); setEditingMessage(null); }}></i>
+                      </div>
+                  )}
                   <input 
                     type="text" 
                     className="chat-input" 

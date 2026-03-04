@@ -126,6 +126,18 @@ io.on('connection', (socket) => {
     io.to(receiverId).emit('displayTyping', { senderId, isTyping });
   });
 
+  socket.on('editMessage', (data) => {
+    const { chatId, messageId, senderId, receiverId, newText } = data;
+    // Emit to both to update UI instantly
+    io.to(senderId).to(receiverId).emit('messageEdited', { chatId, messageId, newText });
+  });
+
+  socket.on('deleteMessage', (data) => {
+    const { chatId, messageId, senderId, receiverId } = data;
+    // Emit to both
+    io.to(senderId).to(receiverId).emit('messageDeleted', { chatId, messageId });
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected');
     // Remove from map if needed

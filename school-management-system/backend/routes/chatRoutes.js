@@ -5,7 +5,9 @@ const {
   getMyChats, 
   getChatMessages,
   getStaffListForChat,
-  markMessagesAsRead 
+  markMessagesAsRead,
+  editMessage,
+  deleteMessage 
 } = require('../controllers/chatController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -16,5 +18,7 @@ router.get('/', getMyChats);
 router.get('/messages/:chatId', getChatMessages);
 router.get('/staff-list', getStaffListForChat);
 router.put('/read/:chatId', markMessagesAsRead);
+router.put('/message/:messageId', editMessage);
+router.delete('/message/:messageId', deleteMessage);
 
 module.exports = router;

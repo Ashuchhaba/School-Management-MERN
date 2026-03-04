@@ -112,33 +112,75 @@
     gap: 10px;
 }
 
+.message-bubble:hover .message-actions {
+    opacity: 1 !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.hover-opacity-100 {
+    opacity: 0;
+}
+
+.transition-opacity {
+    transition: opacity 0.2s;
+}
+
+.chat-input-area {
+    position: relative; /* For edit indicator */
+}
+
+.message-actions i:hover {
+    transform: scale(1.2);
+}
+
 .message-bubble {
-    max-width: 70%;
-    padding: 8px 12px;
-    border-radius: 8px;
+    max-width: 75%;
+    border-radius: 18px; /* More roundish corners */
     position: relative;
     font-size: 0.95rem;
     line-height: 1.4;
     word-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    margin-bottom: 2px;
 }
 
 .message-sent {
     align-self: flex-end;
     background: #dcf8c6;
-    border-top-right-radius: 0;
+    border-top-right-radius: 4px; /* Sharper corner for the tail */
 }
 
 .message-received {
     align-self: flex-start;
     background: white;
-    border-top-left-radius: 0;
+    border-top-left-radius: 4px; /* Sharper corner for the tail */
+}
+
+.msg-bubble-content {
+    padding: 8px 12px 5px 12px;
+    min-width: 60px;
+}
+
+.message-text {
+    margin-bottom: 2px;
+    font-size: 0.95rem;
+    line-height: 1.4;
 }
 
 .message-time {
-    font-size: 0.7rem;
-    color: #999;
-    margin-top: 4px;
+    font-size: 0.65rem;
+    color: #888;
     text-align: right;
+    margin-top: 2px;
+}
+
+.message-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 2px;
 }
 
 .typing-indicator {
