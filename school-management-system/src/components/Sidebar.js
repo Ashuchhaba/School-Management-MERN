@@ -1,10 +1,12 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useLayout } from '../contexts/LayoutContext';
 
 function Sidebar() {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { sidebarOpen, closeSidebar } = useLayout();
 
   const handleLogout = async () => {
     await logout();
@@ -12,8 +14,8 @@ function Sidebar() {
   };
 
   return (
-    <nav className="sidebar" id="sidebar">
-      <div className="sidebar-header">
+    <nav className={`sidebar ${sidebarOpen ? 'show' : 'collapsed'}`} id="sidebar">
+      <div className="sidebar-header d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center">
           <i className="fas fa-graduation-cap text-primary me-2" style={{ fontSize: '1.5rem' }}></i>
           <div>
@@ -21,38 +23,41 @@ function Sidebar() {
             <small>International School</small>
           </div>
         </div>
+        <button className="btn text-white d-lg-none" onClick={closeSidebar}>
+          <i className="fas fa-times"></i>
+        </button>
       </div>
 
       <div className="sidebar-menu">
-        <NavLink to="/dashboard" className="nav-link">
+        <NavLink to="/dashboard" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-tachometer-alt"></i>
           Dashboard
         </NavLink>
-        <NavLink to="/fees" className="nav-link">
+        <NavLink to="/fees" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-money-bill-wave"></i>
           Fees Management
         </NavLink>
-        <NavLink to="/staff" className="nav-link">
+        <NavLink to="/staff" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-users"></i>
           Staff Details
         </NavLink>
-        <NavLink to="/students" className="nav-link">
+        <NavLink to="/students" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-user-graduate"></i>
           Student Details
         </NavLink>
-        <NavLink to="/staff-payment" className="nav-link">
+        <NavLink to="/staff-payment" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-credit-card"></i>
           Staff Payment
         </NavLink>
-        <NavLink to="/notice-board" className="nav-link">
+        <NavLink to="/notice-board" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-bullhorn"></i>
           Notice Board
         </NavLink>
-        <NavLink to="/admissions" className="nav-link">
+        <NavLink to="/admissions" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-user-plus"></i>
           Admissions
         </NavLink>
-        <NavLink to="/reports" className="nav-link">
+        <NavLink to="/reports" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-chart-bar"></i>
           Reports
         </NavLink>

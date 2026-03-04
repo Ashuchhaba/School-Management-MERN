@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { PopupProvider } from './contexts/PopupContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LayoutProvider } from './contexts/LayoutContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -111,7 +112,9 @@ function App() {
   return (
     <AuthProvider>
       <PopupProvider>
-        <AppContent />
+        <LayoutProvider>
+          <AppContent />
+        </LayoutProvider>
       </PopupProvider>
     </AuthProvider>
   );

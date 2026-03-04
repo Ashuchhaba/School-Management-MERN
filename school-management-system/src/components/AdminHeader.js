@@ -1,11 +1,14 @@
 import React from 'react';
+import { useLayout } from '../contexts/LayoutContext';
 
 function AdminHeader() {
+  const { toggleSidebar } = useLayout();
+
   return (
     <header className="top-header">
       <div className="d-flex justify-content-between align-items-center w-100">
         <div className="d-flex align-items-center">
-          <button className="mobile-menu-toggle me-3" id="mobileMenuToggle">
+          <button className="mobile-menu-toggle me-3" onClick={toggleSidebar}>
             <i className="fas fa-bars"></i>
           </button>
           <h1 className="page-title">Dashboard</h1>

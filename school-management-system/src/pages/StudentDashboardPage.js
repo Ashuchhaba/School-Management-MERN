@@ -37,7 +37,7 @@ function StudentDashboardPage() {
         ) : (
           <>
             <div className="row g-4 mb-4">
-              <div className="col-md-3">
+              <div className="col-lg-3 col-md-6">
                 <StatCard
                   label="Class & Section"
                   value={`${stats.class} ${stats.section || ''}`}
@@ -45,7 +45,7 @@ function StudentDashboardPage() {
                   type="primary"
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-3 col-md-6">
                 <StatCard
                   label="Attendance"
                   value={`${stats.attendancePercentage}%`}
@@ -53,7 +53,7 @@ function StudentDashboardPage() {
                   type={stats.attendancePercentage >= 75 ? 'success' : 'warning'}
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-3 col-md-6">
                 <StatCard
                   label="Fees Due"
                   value={`₹${stats.feeDue}`}
@@ -61,7 +61,7 @@ function StudentDashboardPage() {
                   type={stats.feeDue > 0 ? 'danger' : 'success'}
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-3 col-md-6">
                 <StatCard
                   label="Next Exam"
                   value={stats.nextExam}

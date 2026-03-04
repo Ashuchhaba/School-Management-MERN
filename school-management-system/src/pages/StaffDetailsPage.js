@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import Sidebar from '../components/Sidebar';
-import AdminHeader from '../components/AdminHeader';
+import AdminLayout from '../components/AdminLayout';
 import ViewStaffModal from '../components/ViewStaffModal';
 import EditStaffModal from '../components/EditStaffModal';
 import { usePopup } from '../contexts/PopupContext';
@@ -166,21 +165,17 @@ function StaffDetailsPage() {
   });
 
   return (
-    <div className="admin-wrapper">
-      <Sidebar />
-      <div className="main-content">
-        <AdminHeader />
-        <div className="content-area">
-          <div className="card">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="card-title mb-0">
-                <i className="fas fa-users text-primary me-2"></i>
-                All Staff
-              </h5>
-              <button className="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStaffModal">
-                <i className="fas fa-plus me-2"></i>Add New Staff
-              </button>
-            </div>
+    <AdminLayout>
+      <div className="card">
+        <div className="card-header d-flex justify-content-between align-items-center">
+          <h5 className="card-title mb-0">
+            <i className="fas fa-users text-primary me-2"></i>
+            All Staff
+          </h5>
+          <button className="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+            <i className="fas fa-plus me-2"></i>Add New Staff
+          </button>
+        </div>
             <div className="card-body">
               <div className="search-filter-bar mb-3">
                 <div className="row align-items-center">
@@ -272,8 +267,6 @@ function StaffDetailsPage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
       {/* Add Staff Modal */}
       <div className="modal fade" id="addStaffModal" tabIndex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
@@ -423,7 +416,7 @@ function StaffDetailsPage() {
       {isEditModalOpen && (
         <EditStaffModal staff={selectedStaff} onSave={handleUpdateStaff} onClose={() => setIsEditModalOpen(false)} />
       )}
-    </div>
+    </AdminLayout>
   );
 }
 

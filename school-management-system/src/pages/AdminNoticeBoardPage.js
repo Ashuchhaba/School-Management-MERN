@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import Sidebar from '../components/Sidebar';
-import AdminHeader from '../components/AdminHeader';
+import AdminLayout from '../components/AdminLayout';
 import { usePopup } from '../contexts/PopupContext';
 import Portal from '../components/Portal';
 
@@ -105,70 +104,64 @@ function AdminNoticeBoardPage() {
   };
 
   return (
-    <div className="admin-wrapper">
-      <Sidebar />
-      <div className="main-content">
-        <AdminHeader />
-        <div className="content-area">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h1 className="page-title"><i className="fas fa-bullhorn me-2"></i>Notice Board</h1>
-            <button className="btn btn-primary" onClick={openAddModal}>
-              <i className="fas fa-plus me-2"></i>Post New Notice
-            </button>
-          </div>
+    <AdminLayout>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 className="page-title"><i className="fas fa-bullhorn me-2"></i>Notice Board</h1>
+        <button className="btn btn-primary" onClick={openAddModal}>
+          <i className="fas fa-plus me-2"></i>Post New Notice
+        </button>
+      </div>
 
-          <div className="card">
-            <div className="card-body">
-              {loading ? (
-                <p>Loading notices...</p>
-              ) : notices.length > 0 ? (
-                <div className="table-responsive">
-                  <table className="table table-hover">
-                    <thead>
-                      <tr>
-                        <th>Title</th>
-                        <th>Content</th>
-                        <th>Audience</th>
-                        <th>Posted By</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {notices.map((notice) => (
-                        <tr key={notice._id}>
-                          <td style={{ fontWeight: '500' }}>{notice.title}</td>
-                          <td style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {notice.content}
-                          </td>
-                          <td>
-                            <span className={`badge bg-${notice.target_audience === 'all' ? 'info' : notice.target_audience === 'staff' ? 'warning' : 'success'}`}>
-                              {notice.target_audience ? notice.target_audience.toUpperCase() : 'ALL'}
-                            </span>
-                          </td>
-                          <td>{notice.posted_by}</td>
-                          <td>{new Date(notice.date).toLocaleDateString()}</td>
-                          <td>
-                            <button className="btn btn-sm btn-outline-primary me-2" onClick={() => openEditModal(notice)}>
-                              <i className="fas fa-edit"></i>
-                            </button>
-                            <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(notice._id)}>
-                              <i className="fas fa-trash"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-center py-5">
-                  <i className="fas fa-clipboard-list text-muted mb-3" style={{ fontSize: '3rem' }}></i>
-                  <p className="text-muted">No notices posted yet.</p>
-                </div>
-              )}
+      <div className="card">
+        <div className="card-body">
+          {loading ? (
+            <p>Loading notices...</p>
+          ) : notices.length > 0 ? (
+            <div className="table-responsive">
+              <table className="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Audience</th>
+                    <th>Posted By</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {notices.map((notice) => (
+                    <tr key={notice._id}>
+                      <td style={{ fontWeight: '500' }}>{notice.title}</td>
+                      <td style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {notice.content}
+                      </td>
+                      <td>
+                        <span className={`badge bg-${notice.target_audience === 'all' ? 'info' : notice.target_audience === 'staff' ? 'warning' : 'success'}`}>
+                          {notice.target_audience ? notice.target_audience.toUpperCase() : 'ALL'}
+                        </span>
+                      </td>
+                      <td>{notice.posted_by}</td>
+                      <td>{new Date(notice.date).toLocaleDateString()}</td>
+                      <td>
+                        <button className="btn btn-sm btn-outline-primary me-2" onClick={() => openEditModal(notice)}>
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(notice._id)}>
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-5">
+              <i className="fas fa-clipboard-list text-muted mb-3" style={{ fontSize: '3rem' }}></i>
+              <p className="text-muted">No notices posted yet.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -232,7 +225,7 @@ function AdminNoticeBoardPage() {
           </div>
         </Portal>
       )}
-    </div>
+    </AdminLayout>
   );
 }
 

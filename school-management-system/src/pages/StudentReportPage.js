@@ -1,19 +1,12 @@
 import React from 'react';
-import Sidebar from '../components/Sidebar';
-import AdminHeader from '../components/AdminHeader';
+import AdminLayout from '../components/AdminLayout';
 import StudentReport from '../components/StudentReport';
 
 const StudentReportPage = () => {
   return (
-    <div className="d-flex">
-      <Sidebar />
-      <div className="main-content">
-        <AdminHeader />
-        <div className="p-4">
-          <StudentReport />
-        </div>
-      </div>
-    </div>
+    <AdminLayout>
+      <StudentReport />
+    </AdminLayout>
   );
 };
 

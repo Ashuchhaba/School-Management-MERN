@@ -37,7 +37,7 @@ function StaffDashboardPage() {
         ) : (
           <>
             <div className="row g-4 mb-4">
-              <div className="col-md-3">
+              <div className="col-lg-3 col-md-6">
                 <StatCard
                   label={`Class Teacher Of (${stats.assignedClasses} Assigned)`}
                   value={stats.classTeacherOf || 'None'}
@@ -45,7 +45,7 @@ function StaffDashboardPage() {
                   type="primary"
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-3 col-md-6">
                 <StatCard
                   label="Total Students"
                   value={stats.totalStudents}
@@ -53,7 +53,7 @@ function StaffDashboardPage() {
                   type="success"
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-3 col-md-6">
                 <StatCard
                   label="Present Today"
                   value={stats.attendanceToday}
@@ -61,7 +61,7 @@ function StaffDashboardPage() {
                   type="info"
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-3 col-md-6">
                 <StatCard
                   label="Last Salary"
                   value={`₹${stats.lastSalary || 0}`}

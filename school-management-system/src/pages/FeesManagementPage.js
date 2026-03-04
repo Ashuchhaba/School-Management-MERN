@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import Sidebar from '../components/Sidebar';
-import AdminHeader from '../components/AdminHeader';
+import AdminLayout from '../components/AdminLayout';
 import { usePopup } from '../contexts/PopupContext';
 
 function FeesManagementPage() {
@@ -213,27 +212,22 @@ function FeesManagementPage() {
   const filteredFeeStructures = selectedClass ? feeStructures.filter(fs => fs.class === selectedClass) : [];
 
   return (
-    <>
-      <div className="admin-wrapper">
-        <Sidebar />
-        <div className="main-content">
-          <AdminHeader />
-          <div className="content-area">
-            <div className="card">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h5 className="card-title mb-0">
-                  <i className="fas fa-money-bill-wave text-primary me-2"></i>
-                  All Fees
-                </h5>
-                <div>
-                  <button className="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#updatePaymentModal">
-                    <i className="fas fa-plus me-2"></i>Update Payment
-                  </button>
-                  <button className="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#feeStructureModal">
-                    <i className="fas fa-cogs me-2"></i>Manage Fee Structure
-                  </button>
-                </div>
-              </div>
+    <AdminLayout>
+      <div className="card">
+        <div className="card-header d-flex justify-content-between align-items-center">
+          <h5 className="card-title mb-0">
+            <i className="fas fa-money-bill-wave text-primary me-2"></i>
+            All Fees
+          </h5>
+          <div>
+            <button className="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#updatePaymentModal">
+              <i className="fas fa-plus me-2"></i>Update Payment
+            </button>
+            <button className="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#feeStructureModal">
+              <i className="fas fa-cogs me-2"></i>Manage Fee Structure
+            </button>
+          </div>
+        </div>
               <div className="card-body">
                 <div className="search-filter-bar mb-3">
                   <div className="row g-3">
@@ -313,9 +307,6 @@ function FeesManagementPage() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
       {/* Update Payment Modal */}
       <div className="modal fade" id="updatePaymentModal" tabIndex="-1" aria-labelledby="updatePaymentModalLabel" aria-hidden="true">
@@ -475,7 +466,7 @@ function FeesManagementPage() {
           </div>
         </div>
       </div>
-    </>
+    </AdminLayout>
   );
 }
 

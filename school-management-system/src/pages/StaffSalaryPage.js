@@ -31,30 +31,32 @@ function StaffSalaryPage() {
         ) : (
           <div className="card">
             <div className="card-body">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Month</th>
-                    <th>Total Days Present</th>
-                    <th>Total Days in Month</th>
-                    <th>Calculated Salary</th>
-                    <th>Paid On</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {salaries.map(salary => (
-                    <tr key={salary._id}>
-                      <td>{new Date(salary.payment_month).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</td>
-                      <td>{salary.total_days_present}</td>
-                      <td>{salary.total_days_in_month}</td>
-                      <td>₹{salary.calculated_salary.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                      <td>{salary.paid_on ? new Date(salary.paid_on).toLocaleDateString() : 'N/A'}</td>
-                      <td>{salary.notes}</td>
+              <div className="table-responsive">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Month</th>
+                      <th>Total Days Present</th>
+                      <th>Total Days in Month</th>
+                      <th>Calculated Salary</th>
+                      <th>Paid On</th>
+                      <th>Notes</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {salaries.map(salary => (
+                      <tr key={salary._id}>
+                        <td>{new Date(salary.payment_month).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</td>
+                        <td>{salary.total_days_present}</td>
+                        <td>{salary.total_days_in_month}</td>
+                        <td>₹{salary.calculated_salary.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td>{salary.paid_on ? new Date(salary.paid_on).toLocaleDateString() : 'N/A'}</td>
+                        <td>{salary.notes}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}

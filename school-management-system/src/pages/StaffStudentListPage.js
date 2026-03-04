@@ -85,26 +85,28 @@ function StaffStudentListPage() {
         ) : (
           <div className="card">
             <div className="card-body">
-              <table className="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Roll No</th>
-                    <th>Name</th>
-                    <th>Class</th>
-                    <th>Mobile</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredStudents.map(student => (
-                    <tr key={student._id}>
-                      <td>{student.roll_no}</td>
-                      <td>{student.name}</td>
-                      <td>{student.class}</td>
-                      <td>{student.mobile_no1}</td>
+              <div className="table-responsive">
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Roll No</th>
+                      <th>Name</th>
+                      <th>Class</th>
+                      <th>Mobile</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredStudents.map(student => (
+                      <tr key={student._id}>
+                        <td>{student.roll_no}</td>
+                        <td>{student.name}</td>
+                        <td>{student.class}</td>
+                        <td>{student.mobile_no1}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}

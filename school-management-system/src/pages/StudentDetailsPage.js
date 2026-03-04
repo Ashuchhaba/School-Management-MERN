@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import Sidebar from '../components/Sidebar';
-import AdminHeader from '../components/AdminHeader';
+import AdminLayout from '../components/AdminLayout';
 import ViewStudentModal from '../components/ViewStudentModal';
 import EditStudentModal from '../components/EditStudentModal';
 import { usePopup } from '../contexts/PopupContext';
@@ -163,21 +162,17 @@ function StudentDetailsPage() {
   });
 
   return (
-    <div className="admin-wrapper">
-      <Sidebar />
-      <div className="main-content">
-        <AdminHeader />
-        <div className="content-area">
-          <div className="card">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="card-title mb-0">
-                <i className="fas fa-user-graduate text-primary me-2"></i>
-                All Students
-              </h5>
-              <button className="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                <i className="fas fa-plus me-2"></i>Add New Student
-              </button>
-            </div>
+    <AdminLayout>
+      <div className="card">
+        <div className="card-header d-flex justify-content-between align-items-center">
+          <h5 className="card-title mb-0">
+            <i className="fas fa-user-graduate text-primary me-2"></i>
+            All Students
+          </h5>
+          <button className="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+            <i className="fas fa-plus me-2"></i>Add New Student
+          </button>
+        </div>
             <div className="card-body">
               <div className="search-filter-bar mb-3 row">
               <div className="col-md-4">
@@ -271,8 +266,6 @@ function StudentDetailsPage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
       {/* Add Student Modal */}
       <div className="modal fade" id="addStudentModal" tabIndex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
@@ -439,7 +432,7 @@ function StudentDetailsPage() {
       {isEditModalOpen && (
         <EditStudentModal student={selectedStudent} onSave={handleUpdateStudent} onClose={handleCloseModal} />
       )}
-    </div>
+    </AdminLayout>
   );
 }
 

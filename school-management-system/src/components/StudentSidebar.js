@@ -1,10 +1,12 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useLayout } from '../contexts/LayoutContext';
 
 function StudentSidebar() {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { sidebarOpen, closeSidebar } = useLayout();
 
   const handleLogout = async () => {
     await logout();
@@ -12,8 +14,8 @@ function StudentSidebar() {
   };
 
   return (
-    <nav className="sidebar" id="sidebar">
-      <div className="sidebar-header">
+    <nav className={`sidebar ${sidebarOpen ? 'show' : 'collapsed'}`} id="sidebar">
+      <div className="sidebar-header d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center">
           <i className="fas fa-graduation-cap text-primary me-2" style={{ fontSize: '1.5rem' }}></i>
           <div>
@@ -21,34 +23,37 @@ function StudentSidebar() {
             <small>Student Portal</small>
           </div>
         </div>
+        <button className="btn text-white d-lg-none" onClick={closeSidebar}>
+          <i className="fas fa-times"></i>
+        </button>
       </div>
 
       <div className="sidebar-menu">
-        <NavLink to="/student/dashboard" className="nav-link">
+        <NavLink to="/student/dashboard" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-tachometer-alt"></i>
           Dashboard
         </NavLink>
-        <NavLink to="/student/profile" className="nav-link">
+        <NavLink to="/student/profile" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-user"></i>
           Profile
         </NavLink>
-        <NavLink to="/student/attendance" className="nav-link">
+        <NavLink to="/student/attendance" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-calendar-check"></i>
           Attendance
         </NavLink>
-        <NavLink to="/student/fees" className="nav-link">
+        <NavLink to="/student/fees" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-money-bill-wave"></i>
           Fees
         </NavLink>
-        <NavLink to="/student/exams" className="nav-link">
+        <NavLink to="/student/exams" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-file-alt"></i>
           Exams & Results
         </NavLink>
-        <NavLink to="/student/notices" className="nav-link">
+        <NavLink to="/student/notices" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-bullhorn"></i>
           Notices
         </NavLink>
-        <NavLink to="/student/chat" className="nav-link">
+        <NavLink to="/student/chat" className="nav-link" onClick={closeSidebar}>
           <i className="fas fa-comments"></i>
           Doubt Chat
         </NavLink>

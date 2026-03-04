@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import Sidebar from '../components/Sidebar';
-import AdminHeader from '../components/AdminHeader';
+import AdminLayout from '../components/AdminLayout';
 import { useLocation } from 'react-router-dom';
 import { usePopup } from '../contexts/PopupContext';
 
@@ -188,158 +187,152 @@ function AdmissionsPage() {
   };
 
   return (
-    <div className="admin-wrapper">
-      <Sidebar />
-      <div className="main-content">
-        <AdminHeader />
-        <div className="content-area">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h1 className="page-title">New Student Admission</h1>
-            <button className="btn btn-success" onClick={() => handleShowModal()}>
-              <i className="fas fa-plus me-2"></i>Add New Application
-            </button>
-          </div>
+    <AdminLayout>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 className="page-title">New Student Admission</h1>
+        <button className="btn btn-success" onClick={() => handleShowModal()}>
+          <i className="fas fa-plus me-2"></i>Add New Application
+        </button>
+      </div>
 
-          <div className="card mb-4">
-            <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-4">
-                  <div className="input-group">
-                    <span className="input-group-text">
-                      <i className="fas fa-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="search"
-                      placeholder="Search applicant name or contact..."
-                      value={filters.search}
-                      onChange={handleFilterChange}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-3">
-                  <select
-                    className="form-select"
-                    name="class"
-                    value={filters.class}
-                    onChange={handleFilterChange}
-                  >
-                    <option value="">All Classes</option>
-                    <option value="Nursery">Nursery</option>
-                    <option value="LKG">LKG</option>
-                    <option value="UKG">UKG</option>
-                    <option value="1st">1st</option>
-                    <option value="2nd">2nd</option>
-                    <option value="3rd">3rd</option>
-                    <option value="4th">4th</option>
-                    <option value="5th">5th</option>
-                    <option value="6th">6th</option>
-                    <option value="7th">7th</option>
-                    <option value="8th">8th</option>
-                    <option value="9th">9th</option>
-                    <option value="10th">10th</option>
-                  </select>
-                </div>
-                <div className="col-md-3">
-                  <select
-                    className="form-select"
-                    name="status"
-                    value={filters.status}
-                    onChange={handleFilterChange}
-                  >
-                    <option value="">All Status</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Rejected">Rejected</option>
-                  </select>
-                </div>
-                <div className="col-md-2">
-                  <button className="btn btn-outline-secondary w-100" onClick={clearFilters}>
-                    <i className="fas fa-times me-2"></i>Clear
-                  </button>
-                </div>
+      <div className="card mb-4">
+        <div className="card-body">
+          <div className="row g-3">
+            <div className="col-md-4">
+              <div className="input-group">
+                <span className="input-group-text">
+                  <i className="fas fa-search"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="search"
+                  placeholder="Search applicant name or contact..."
+                  value={filters.search}
+                  onChange={handleFilterChange}
+                />
               </div>
             </div>
+            <div className="col-md-3">
+              <select
+                className="form-select"
+                name="class"
+                value={filters.class}
+                onChange={handleFilterChange}
+              >
+                <option value="">All Classes</option>
+                <option value="Nursery">Nursery</option>
+                <option value="LKG">LKG</option>
+                <option value="UKG">UKG</option>
+                <option value="1st">1st</option>
+                <option value="2nd">2nd</option>
+                <option value="3rd">3rd</option>
+                <option value="4th">4th</option>
+                <option value="5th">5th</option>
+                <option value="6th">6th</option>
+                <option value="7th">7th</option>
+                <option value="8th">8th</option>
+                <option value="9th">9th</option>
+                <option value="10th">10th</option>
+              </select>
+            </div>
+            <div className="col-md-3">
+              <select
+                className="form-select"
+                name="status"
+                value={filters.status}
+                onChange={handleFilterChange}
+              >
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            <div className="col-md-2">
+              <button className="btn btn-outline-secondary w-100" onClick={clearFilters}>
+                <i className="fas fa-times me-2"></i>Clear
+              </button>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div className="card">
-            <div className="card-header">
-              <h5 className="card-title mb-0">
-                <i className="fas fa-list me-2"></i>Admission Applications
-              </h5>
-            </div>
-            <div className="card-body">
-              <div className="table-responsive">
-                <table className="table table-hover">
-                  <thead className="table-light">
-                    <tr>
-                      <th>Applicant Name</th>
-                      <th>Applying For</th>
-                      <th>Father's Name</th>
-                      <th>Contact No</th>
-                      <th>Submission Date</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredAdmissions.map((admission) => (
-                      <tr key={admission._id}>
-                        <td>{admission.applicant_name}</td>
-                        <td>{admission.applying_for_class}</td>
-                        <td>{admission.father_name}</td>
-                        <td>{admission.contact_no1}</td>
-                        <td>{new Date(admission.submission_date).toLocaleDateString()}</td>
-                        <td>
-                          <span
-                            className={`badge ${
-                              admission.status === 'Approved'
-                                ? 'bg-success'
-                                : admission.status === 'Rejected'
-                                ? 'bg-danger'
-                                : 'bg-warning text-dark'
-                            }`}
-                          >
-                            {admission.status}
-                          </span>
-                        </td>
-                        <td>
-                          {admission.status === 'Pending' && (
-                            <>
-                              <button
-                                className="btn btn-sm btn-success me-1"
-                                onClick={() => handleShowApproveModal(admission)}
-                              >
-                                <i className="fas fa-check"></i> Approve
-                              </button>
-                              <button
-                                className="btn btn-sm btn-danger me-1"
-                                onClick={() => handleReject(admission._id)}
-                              >
-                                <i className="fas fa-times"></i> Reject
-                              </button>
-                            </>
-                          )}
+      <div className="card">
+        <div className="card-header">
+          <h5 className="card-title mb-0">
+            <i className="fas fa-list me-2"></i>Admission Applications
+          </h5>
+        </div>
+        <div className="card-body">
+          <div className="table-responsive">
+            <table className="table table-hover">
+              <thead className="table-light">
+                <tr>
+                  <th>Applicant Name</th>
+                  <th>Applying For</th>
+                  <th>Father's Name</th>
+                  <th>Contact No</th>
+                  <th>Submission Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAdmissions.map((admission) => (
+                  <tr key={admission._id}>
+                    <td>{admission.applicant_name}</td>
+                    <td>{admission.applying_for_class}</td>
+                    <td>{admission.father_name}</td>
+                    <td>{admission.contact_no1}</td>
+                    <td>{new Date(admission.submission_date).toLocaleDateString()}</td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          admission.status === 'Approved'
+                            ? 'bg-success'
+                            : admission.status === 'Rejected'
+                            ? 'bg-danger'
+                            : 'bg-warning text-dark'
+                        }`}
+                      >
+                        {admission.status}
+                      </span>
+                    </td>
+                    <td>
+                      {admission.status === 'Pending' && (
+                        <>
                           <button
-                            className="btn btn-sm btn-warning me-1"
-                            onClick={() => handleShowModal(admission)}
+                            className="btn btn-sm btn-success me-1"
+                            onClick={() => handleShowApproveModal(admission)}
                           >
-                            <i className="fas fa-edit"></i>
+                            <i className="fas fa-check"></i> Approve
                           </button>
                           <button
-                            className="btn btn-sm btn-secondary"
-                            onClick={() => handleDelete(admission._id)}
+                            className="btn btn-sm btn-danger me-1"
+                            onClick={() => handleReject(admission._id)}
                           >
-                            <i className="fas fa-trash"></i>
+                            <i className="fas fa-times"></i> Reject
                           </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                        </>
+                      )}
+                      <button
+                        className="btn btn-sm btn-warning me-1"
+                        onClick={() => handleShowModal(admission)}
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button
+                        className="btn btn-sm btn-secondary"
+                        onClick={() => handleDelete(admission._id)}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -624,7 +617,7 @@ function AdmissionsPage() {
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }
 

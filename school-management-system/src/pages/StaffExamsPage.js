@@ -327,32 +327,34 @@ function StaffExamsPage() {
                     </div>
                     <div className="card-body">
                         {loading ? <p>Loading...</p> : schedules.length > 0 ? (
-                            <table className="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Exam Type</th>
-                                        <th>Subject</th>
-                                        <th>Time</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {schedules.map(sch => (
-                                        <tr key={sch._id}>
-                                            <td>{new Date(sch.date).toLocaleDateString()}</td>
-                                            <td>{sch.exam_type}</td>
-                                            <td>{sch.subject}</td>
-                                            <td>{sch.start_time} - {sch.end_time}</td>
-                                            <td>
-                                                <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteSchedule(sch._id)}>
-                                                    <i className="fas fa-trash"></i>
-                                                </button>
-                                            </td>
+                            <div className="table-responsive">
+                                <table className="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Exam Type</th>
+                                            <th>Subject</th>
+                                            <th>Time</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {schedules.map(sch => (
+                                            <tr key={sch._id}>
+                                                <td>{new Date(sch.date).toLocaleDateString()}</td>
+                                                <td>{sch.exam_type}</td>
+                                                <td>{sch.subject}</td>
+                                                <td>{sch.start_time} - {sch.end_time}</td>
+                                                <td>
+                                                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteSchedule(sch._id)}>
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         ) : (
                             <p className="text-muted text-center py-4">No schedule found for this class.</p>
                         )}

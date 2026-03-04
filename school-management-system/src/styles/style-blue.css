@@ -430,12 +430,87 @@ body {
     box-shadow: var(--shadow);
 }
 
-/* Smooth Scrolling */
+/* Responsive Adjustments for Home Page */
+@media (max-width: 991px) {
+    .hero-section {
+        min-height: auto;
+        padding: 120px 0 60px 0;
+    }
+    
+    .hero-content {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-buttons {
+        justify-content: center;
+        display: flex;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .hero-buttons .btn {
+        margin-right: 0 !important;
+        width: 100%;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .news-item {
+        flex-direction: column;
+    }
+    
+    .news-date {
+        width: 100%;
+        height: auto;
+        padding: 10px;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: center;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .gallery-image {
+        height: 200px;
+    }
+}
+
+/* Smooth Scrolling and Layout Consistency */
 html {
     scroll-behavior: smooth;
 }
 
-/* Override for Home Page */
 .home-page .main-content {
     margin-left: 0 !important;
+    width: 100% !important;
+}
+
+.content-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    height: 100%;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .content-section {
+        padding: 1.5rem;
+    }
 }

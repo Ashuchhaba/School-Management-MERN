@@ -189,6 +189,10 @@ function ChatPage() {
     setSelectedContact(contact);
     setOtherUserTyping(false);
     
+    // Hide sidebar on mobile when contact selected
+    const sidebar = document.querySelector('.chat-sidebar');
+    if (sidebar) sidebar.classList.add('hidden');
+    
     setContacts(prev => prev.map(c => 
         c._id === contact._id ? { ...c, hasNewMessage: false, unreadCount: 0 } : c
     ));
@@ -199,6 +203,13 @@ function ChatPage() {
     } catch (err) {
       console.error('Error getting chat:', err);
     }
+  };
+
+  const handleBackToContacts = () => {
+    const sidebar = document.querySelector('.chat-sidebar');
+    if (sidebar) sidebar.classList.remove('hidden');
+    setSelectedContact(null);
+    setActiveChat(null);
   };
 
   const handleEditClick = (msg) => {
@@ -350,6 +361,9 @@ function ChatPage() {
             {selectedContact ? (
               <>
                 <div className="chat-header">
+                  <button className="back-btn-chat" onClick={handleBackToContacts}>
+                    <i className="fas fa-arrow-left"></i>
+                  </button>
                   <div className="user-avatar-small" style={{ width: '35px', height: '35px', fontSize: '1rem' }}>
                     {selectedContact.name?.charAt(0).toUpperCase()}
                   </div>
