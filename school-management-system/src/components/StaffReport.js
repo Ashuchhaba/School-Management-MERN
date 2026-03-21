@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import autoTable from 'jspdf-autotable';
+import api from '../api';
 
 const StaffReport = () => {
   const [staff, setStaff] = useState([]);
@@ -13,16 +14,18 @@ const StaffReport = () => {
 
   // Fetch staff from API
   useEffect(() => {
-    // Replace with your API endpoint
-    fetch('/api/reports/staff')
-      .then((res) => res.json())
-      .then((data) => {
+    api.get('/api/reports/staff')
+      .then((res) => {
+        const data = res.data;
         if (Array.isArray(data)) {
           setStaff(data);
           setFilteredStaff(data);
         } else {
           console.error('Data is not an array:', data);
         }
+      })
+      .catch(err => {
+        console.error('Error fetching staff report:', err);
       });
   }, []);
 

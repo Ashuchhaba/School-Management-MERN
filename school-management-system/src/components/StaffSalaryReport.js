@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import autoTable from 'jspdf-autotable';
+import api from '../api';
 
 const StaffSalaryReport = () => {
   const [salaries, setSalaries] = useState([]);
@@ -13,16 +14,18 @@ const StaffSalaryReport = () => {
 
   // Fetch salaries from API
   useEffect(() => {
-    // Replace with your API endpoint
-    fetch('/api/reports/salaries')
-      .then((res) => res.json())
-      .then((data) => {
+    api.get('/api/reports/salaries')
+      .then((res) => {
+        const data = res.data;
         if (Array.isArray(data)) {
           setSalaries(data);
           setFilteredSalaries(data);
         } else {
           console.error('Data is not an array:', data);
         }
+      })
+      .catch(err => {
+        console.error('Error fetching salary report:', err);
       });
   }, []);
 
