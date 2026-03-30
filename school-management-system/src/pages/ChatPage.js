@@ -46,6 +46,22 @@ function ChatPage() {
             };
         });
         setContacts(initialized);
+      } else if (user.role === 'staff') {
+        // Staff should be able to see all students
+        const res = await api.get('/api/chat/student-list');
+        const chatsRes = await api.get('/api/chat');
+
+        const initialized = res.data.map(student => {
+            const chat = chatsRes.data.find(c => c.participants.some(p => p._id.toString() === student._id.toString()));
+            return {
+                ...student,
+                chatId: chat?._id,
+                lastMessage: chat?.lastMessage,
+                unreadCount: chat?.unreadCount || 0,
+                hasNewMessage: (chat?.unreadCount || 0) > 0
+            };
+        });
+        setContacts(initialized);
       } else {
         const res = await api.get('/api/chat');
         const formattedContacts = res.data.map(chat => {
@@ -385,7 +401,7 @@ function ChatPage() {
                         <div className="d-flex justify-content-between align-items-start">
                           <div className={`message-text ${msg.isDeleted ? 'text-muted fst-italic' : ''}`}>{msg.text}</div>
                           {msg.senderId === user._id && !msg.isDeleted && (
-                              <div className="message-actions ms-2 opacity-0 hover-opacity-100 transition-opacity">
+                              <div className="message-actions ms-2 transition-opacity">
                                   <i className="fas fa-pen fa-xs text-muted me-2 cursor-pointer" onClick={() => handleEditClick(msg)}></i>
                                   <i className="fas fa-trash fa-xs text-danger cursor-pointer" onClick={() => handleDeleteMessage(msg._id)}></i>
                               </div>

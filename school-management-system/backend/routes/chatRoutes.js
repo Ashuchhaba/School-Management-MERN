@@ -5,6 +5,7 @@ const {
   getMyChats, 
   getChatMessages,
   getStaffListForChat,
+  getStudentListForChat,
   markMessagesAsRead,
   editMessage,
   deleteMessage 
@@ -17,6 +18,7 @@ router.post('/get-or-create', getOrCreateChat);
 router.get('/', getMyChats);
 router.get('/messages/:chatId', getChatMessages);
 router.get('/staff-list', getStaffListForChat);
+router.get('/student-list', getStudentListForChat);
 router.put('/read/:chatId', markMessagesAsRead);
 router.put('/message/:messageId', editMessage);
 router.delete('/message/:messageId', deleteMessage);

@@ -314,3 +314,12 @@
 {"level":"info","message":"Create Notice Request. Session ID: WpDbLHSwcMlVAVqoYmMdCb3bwEBrv86f"}
 {"level":"info","message":"User from session: {\"id\":\"69283ab334d3ace4cb5820b8\",\"name\":\"admin\",\"role\":\"admin\"}"}
 {"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"Create Notice Request. Session ID: SWN52Dn2enWs2e0DDKwIZ7pcl_c8E7es"}
+{"level":"info","message":"User from session: {\"id\":\"69283ab334d3ace4cb5820b8\",\"name\":\"admin\",\"role\":\"admin\"}"}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}

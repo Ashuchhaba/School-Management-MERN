@@ -123,6 +123,35 @@ const getStaffListForChat = async (req, res) => {
   }
 };
 
+// @desc    Get list of students for staff to chat with
+// @route   GET /api/chat/student-list
+const getStudentListForChat = async (req, res) => {
+  try {
+    // Find all users with role 'student'
+    const studentUsers = await User.find({ role: 'student' }).select('-password');
+    
+    // We want to attach class and roll number from Student collection
+    const studentProfiles = await Student.find({});
+    
+    const combinedList = studentUsers.map(user => {
+        const profile = studentProfiles.find(p => p._id.toString() === user.referenceId?.toString());
+        return {
+            _id: user._id,
+            name: profile?.name || user.username,
+            role: user.role,
+            class: profile?.class,
+            roll_no: profile?.roll_no,
+            referenceId: user.referenceId
+        };
+    });
+
+    res.status(200).json(combinedList);
+  } catch (error) {
+    logger.error('Error in getStudentListForChat:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 // @desc    Mark all messages in a chat as read
 // @route   PUT /api/chat/read/:chatId
 const markMessagesAsRead = async (req, res) => {
@@ -192,6 +221,7 @@ module.exports = {
   getMyChats,
   getChatMessages,
   getStaffListForChat,
+  getStudentListForChat,
   markMessagesAsRead,
   editMessage,
   deleteMessage
