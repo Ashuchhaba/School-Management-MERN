@@ -1,26 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function News() {
-  const newsData = [
-    {
-      day: '15',
-      month: 'Dec',
-      title: 'Annual Sports Day 2024',
-      excerpt: 'Join us for our annual sports day celebration with exciting competitions and activities for all students.',
-    },
-    {
-      day: '12',
-      month: 'Dec',
-      title: 'Science Exhibition Success',
-      excerpt: 'Our students showcased innovative science projects at the inter-school exhibition and won multiple awards.',
-    },
-    {
-      day: '08',
-      month: 'Dec',
-      title: 'New Computer Lab Inauguration',
-      excerpt: 'State-of-the-art computer laboratory with latest technology has been inaugurated for enhanced learning.',
-    },
-  ];
+  const [newsData, setNewsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/public/news`);
+        setNewsData(res.data);
+      } catch (err) {
+        console.error('Error fetching news:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNews();
+  }, []);
+
+  const getDay = (dateString) => {
+    const date = new Date(dateString);
+    return date.getDate().toString().padStart(2, '0');
+  };
+
+  const getMonth = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('default', { month: 'short' });
+  };
 
   return (
     <div className="col-lg-4">
@@ -32,19 +39,25 @@ function News() {
           </h2>
         </div>
         <div className="news-container">
-          {newsData.map((item, index) => (
-            <article className="news-item" key={index}>
-              <div className="news-date">
-                <span className="day">{item.day}</span>
-                <span className="month">{item.month}</span>
-              </div>
-              <div className="news-content">
-                <h5 className="news-title">{item.title}</h5>
-                <p className="news-excerpt">{item.excerpt}</p>
-                <a href="/" className="news-link">Read More <i className="fas fa-arrow-right"></i></a>
-              </div>
-            </article>
-          ))}
+          {loading ? (
+            <p>Loading news...</p>
+          ) : newsData.length > 0 ? (
+            newsData.map((item, index) => (
+              <article className="news-item" key={item._id || index}>
+                <div className="news-date">
+                  <span className="day">{getDay(item.date)}</span>
+                  <span className="month">{getMonth(item.date)}</span>
+                </div>
+                <div className="news-content">
+                  <h5 className="news-title">{item.title}</h5>
+                  <p className="news-excerpt">{item.content.substring(0, 100)}{item.content.length > 100 ? '...' : ''}</p>
+                  <a href="/" className="news-link">Read More <i className="fas fa-arrow-right"></i></a>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p>No news items found.</p>
+          )}
         </div>
       </section>
     </div>

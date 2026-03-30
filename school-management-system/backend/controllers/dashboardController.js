@@ -95,8 +95,26 @@ const getRecentActivities = async (req, res) => {
   }
 };
 
+// @desc    Get public stats (student and staff count)
+// @route   GET /api/public/stats
+// @access  Public
+const getPublicStats = async (req, res) => {
+    try {
+        const totalStudents = await Student.countDocuments({ is_active: true });
+        const totalStaff = await Staff.countDocuments({ is_active: true });
+        res.json({
+            totalStudents,
+            totalStaff
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 module.exports = {
   getDashboardStats,
   getClassDistribution,
   getRecentActivities,
+  getPublicStats
 };

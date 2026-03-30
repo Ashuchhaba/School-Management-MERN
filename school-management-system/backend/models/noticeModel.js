@@ -22,6 +22,11 @@ const noticeSchema = new mongoose.Schema({
     enum: ['all', 'staff', 'student'],
     default: 'all',
   },
+  type: {
+    type: String,
+    enum: ['notice', 'news'],
+    default: 'notice',
+  },
   created_at: {
     type: Date,
     default: Date.now,

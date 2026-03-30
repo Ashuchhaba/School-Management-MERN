@@ -190,7 +190,7 @@ function AdmissionsPage() {
     <AdminLayout>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="page-title">New Student Admission</h1>
-        <button className="btn btn-success" onClick={() => handleShowModal()}>
+        <button className="btn btn-success btn-sm" onClick={() => handleShowModal()}>
           <i className="fas fa-plus me-2"></i>Add New Application
         </button>
       </div>
@@ -317,14 +317,16 @@ function AdmissionsPage() {
                         </>
                       )}
                       <button
-                        className="btn btn-sm btn-warning me-1"
+                        className="btn btn-warning action-btn"
                         onClick={() => handleShowModal(admission)}
+                        title="Edit Application"
                       >
                         <i className="fas fa-edit"></i>
                       </button>
                       <button
-                        className="btn btn-sm btn-secondary"
+                        className="btn btn-danger action-btn"
                         onClick={() => handleDelete(admission._id)}
+                        title="Delete Application"
                       >
                         <i className="fas fa-trash"></i>
                       </button>

@@ -1,6 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../api';
 
 function About() {
+  const [stats, setStats] = useState({
+    totalStudents: '1200+',
+    totalStaff: '50+'
+  });
+
+  useEffect(() => {
+    const fetchPublicStats = async () => {
+      try {
+        const res = await api.get('/api/public/stats');
+        
+        const studentCount = res.data.totalStudents;
+        const staffCount = res.data.totalStaff;
+
+        setStats({
+          totalStudents: studentCount >= 1000 ? `${(studentCount / 1000).toFixed(1)}k+` : `${studentCount}+`,
+          totalStaff: `${staffCount}+`
+        });
+      } catch (err) {
+        console.error("Failed to fetch public stats:", err);
+      }
+    };
+    fetchPublicStats();
+  }, []);
+
   return (
     <div className="col-lg-4">
       <section id="about" className="content-section">
@@ -44,13 +69,13 @@ function About() {
             <div className="row text-center">
               <div className="col-6">
                 <div className="stat-item">
-                  <h4 className="stat-number text-primary">1200+</h4>
+                  <h4 className="stat-number text-primary">{stats.totalStudents}</h4>
                   <p className="stat-label">Students</p>
                 </div>
               </div>
               <div className="col-6">
                 <div className="stat-item">
-                  <h4 className="stat-number text-primary">50+</h4>
+                  <h4 className="stat-number text-primary">{stats.totalStaff}</h4>
                   <p className="stat-label">Teachers</p>
                 </div>
               </div>

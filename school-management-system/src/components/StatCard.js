@@ -9,14 +9,14 @@ function StatCard({ icon, label, value, type }) {
   };
 
   return (
-    <div className="stat-card card h-100">
+    <div className={`stat-card card h-100 ${type}`}>
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-center">
           <div>
             <div className={`stat-number ${typeClasses[type]}`}>{value}</div>
             <p className="stat-label text-muted">{label}</p>
           </div>
-          <div className={`stat-icon ${typeClasses[type]}`}>
+          <div className={`stat-icon ${type}`}>
             <i className={`fas ${icon}`}></i>
           </div>
         </div>

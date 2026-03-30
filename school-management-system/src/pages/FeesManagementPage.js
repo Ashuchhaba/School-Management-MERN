@@ -293,11 +293,9 @@ function FeesManagementPage() {
                               </span>
                             </td>
                             <td>
-                              <div className="btn-group btn-group-sm">
-                                <button className="btn btn-outline-danger" onClick={() => handleDelete(fee._id)}>
+                                <button className="btn btn-danger action-btn" onClick={() => handleDelete(fee._id)} title="Delete Fee Record">
                                   <i className="fas fa-trash"></i>
                                 </button>
-                              </div>
                             </td>
                           </tr>
                         )

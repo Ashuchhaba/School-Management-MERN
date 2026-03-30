@@ -246,14 +246,15 @@ function StudentDetailsPage() {
                         <td>{student.father_name}</td>
                         <td>{student.mobile_no1}</td>
                         <td>
-                          <button className="btn btn-info btn-sm me-2" onClick={() => handleViewDetails(student)}>
+                          <button className="btn btn-info action-btn" title="View Details" onClick={() => handleViewDetails(student)}>
                             <i className="fas fa-eye"></i>
                           </button>
-                          <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(student)}>
+                          <button className="btn btn-warning action-btn" title="Edit Student" onClick={() => handleEdit(student)}>
                             <i className="fas fa-edit"></i>
                           </button>
                           <button
-                            className="btn btn-danger btn-sm"
+                            className="btn btn-danger action-btn"
+                            title="Delete Student"
                             onClick={() => handleDelete(student._id)}
                           >
                             <i className="fas fa-trash"></i>

@@ -59,6 +59,13 @@ app.use(
 );
 
 // Define Routes
+const { getPublicStats } = require('./controllers/dashboardController');
+const { getPublicNews } = require('./controllers/noticeController');
+const publicRouter = express.Router();
+publicRouter.get('/stats', getPublicStats);
+publicRouter.get('/news', getPublicNews);
+app.use('/api/public', publicRouter);
+
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/students', protect, setNoCache, require('./routes/studentRoutes'));
 app.use('/api/staff', protect, setNoCache, require('./routes/staffRoutes'));

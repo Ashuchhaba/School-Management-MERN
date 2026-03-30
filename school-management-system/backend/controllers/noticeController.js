@@ -6,10 +6,28 @@ const logger = require('../config/logger');
 // @access  Private (Admin/Staff/Student)
 const getNotices = async (req, res) => {
     try {
-        const notices = await Notice.find({}).sort({ date: -1 });
+        const { type } = req.query;
+        let query = {};
+        if (type) {
+            query.type = type;
+        }
+        const notices = await Notice.find(query).sort({ date: -1 });
         res.json(notices);
     } catch (error) {
         logger.error('Error fetching notices:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get public news
+// @route   GET /api/notices/news
+// @access  Public
+const getPublicNews = async (req, res) => {
+    try {
+        const news = await Notice.find({ type: 'news' }).sort({ date: -1 }).limit(10);
+        res.json(news);
+    } catch (error) {
+        logger.error('Error fetching public news:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
@@ -26,12 +44,13 @@ const createNotice = async (req, res) => {
     }
 
     try {
-        const { title, content, target_audience } = req.body;
+        const { title, content, target_audience, type } = req.body;
         
         const notice = new Notice({
             title,
             content,
-            target_audience,
+            target_audience: target_audience || 'all',
+            type: type || 'notice',
             posted_by: req.session.user ? (req.session.user.name || 'Admin') : 'Admin',
             date: new Date()
         });
@@ -49,13 +68,14 @@ const createNotice = async (req, res) => {
 // @access  Private (Admin)
 const updateNotice = async (req, res) => {
     try {
-        const { title, content, target_audience } = req.body;
+        const { title, content, target_audience, type } = req.body;
         const notice = await Notice.findById(req.params.id);
 
         if (notice) {
             notice.title = title || notice.title;
             notice.content = content || notice.content;
             notice.target_audience = target_audience || notice.target_audience;
+            notice.type = type || notice.type;
 
             const updatedNotice = await notice.save();
             res.json(updatedNotice);
@@ -88,6 +108,7 @@ const deleteNotice = async (req, res) => {
 
 module.exports = {
     getNotices,
+    getPublicNews,
     createNotice,
     updateNotice,
     deleteNotice

@@ -280,6 +280,46 @@
     background: var(--gray-50);
 }
 
+/* Action Buttons Styling */
+.action-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px !important;
+    transition: all 0.2s;
+    margin-right: 5px;
+}
+
+.action-btn i {
+    font-size: 0.85rem;
+}
+
+.action-btn:last-child {
+    margin-right: 0;
+}
+
+/* Forms */
+.form-control {
+    border: 2px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+}
+
 /* Responsive Design Improvements */
 @media (max-width: 1024px) {
     .sidebar {

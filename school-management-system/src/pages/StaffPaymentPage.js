@@ -134,15 +134,23 @@ function StaffPaymentPage() {
       </div>
 
       {/* Payment Overview Cards */}
-      <div className="stats-grid">
+      <div className="row mb-4">
         {loadingStats ? (
-          <p>Loading statistics...</p>
+          <div className="col-12"><p>Loading statistics...</p></div>
         ) : (
           <>
-            <StatCard icon="fa-money-bill-wave" label={`Total Salary Due (${filters.month})`} value={`₹${stats.total_salary_due?.toLocaleString('en-IN')}`} type="primary" />
-            <StatCard icon="fa-check-circle" label={`Total Paid (${filters.month})`} value={`₹${stats.total_paid?.toLocaleString('en-IN')}`} type="success" />
-            <StatCard icon="fa-users" label="Staff Paid" value={`${stats.staff_paid} / ${stats.total_staff}`} type="warning" />
-            <StatCard icon="fa-percentage" label={`Avg Attendance (${filters.month})`} value={`${stats.avg_attendance_percentage}%`} type="info" />
+            <div className="col-lg-3 col-md-6 mb-3">
+              <StatCard icon="fa-money-bill-wave" label={`Total Salary Due (${filters.month})`} value={`₹${stats.total_salary_due?.toLocaleString('en-IN')}`} type="primary" />
+            </div>
+            <div className="col-lg-3 col-md-6 mb-3">
+              <StatCard icon="fa-check-circle" label={`Total Paid (${filters.month})`} value={`₹${stats.total_paid?.toLocaleString('en-IN')}`} type="success" />
+            </div>
+            <div className="col-lg-3 col-md-6 mb-3">
+              <StatCard icon="fa-users" label="Staff Paid" value={`${stats.staff_paid} / ${stats.total_staff}`} type="warning" />
+            </div>
+            <div className="col-lg-3 col-md-6 mb-3">
+              <StatCard icon="fa-percentage" label={`Avg Attendance (${filters.month})`} value={`${stats.avg_attendance_percentage}%`} type="info" />
+            </div>
           </>
         )}
       </div>
@@ -211,13 +219,13 @@ function StaffPaymentPage() {
                           <td>₹{salary.calculated_salary?.toLocaleString('en-IN')}</td>
                           <td>{salary.paid_on ? new Date(salary.paid_on).toLocaleDateString() : 'Pending'}</td>
                           <td>
-                            <button className="btn btn-sm btn-info me-1" title="View Attendance" onClick={() => handleViewAttendance(salary)}>
+                            <button className="btn btn-info action-btn" title="View Attendance" onClick={() => handleViewAttendance(salary)}>
                               <i className="fas fa-calendar-alt"></i>
                             </button>
-                            <button className="btn btn-sm btn-warning me-1" title="Edit/Process Payment" onClick={() => handleEditSalary(salary)}>
+                            <button className="btn btn-warning action-btn" title="Edit/Process Payment" onClick={() => handleEditSalary(salary)}>
                               <i className="fas fa-edit"></i>
                             </button>
-                            <button className="btn btn-sm btn-danger" title="Delete" onClick={() => handleDeleteSalary(salary._id)}>
+                            <button className="btn btn-danger action-btn" title="Delete" onClick={() => handleDeleteSalary(salary._id)}>
                               <i className="fas fa-trash"></i>
                             </button>
                           </td>

@@ -245,15 +245,16 @@ function StaffDetailsPage() {
                         <td>{member.mobile_no}</td>
                         <td>{member.email}</td>
                         <td>
-                          <div className="btn-group btn-group-sm">
-                            <button className="btn btn-outline-primary" onClick={() => handleViewDetails(member)}>
+                          <div className="d-flex">
+                            <button className="btn btn-info action-btn" title="View Details" onClick={() => handleViewDetails(member)}>
                               <i className="fas fa-eye"></i>
                             </button>
-                            <button className="btn btn-outline-warning" onClick={() => handleEdit(member)}>
+                            <button className="btn btn-warning action-btn" title="Edit Staff" onClick={() => handleEdit(member)}>
                               <i className="fas fa-edit"></i>
                             </button>
                             <button
-                              className="btn btn-outline-danger"
+                              className="btn btn-danger action-btn"
+                              title="Delete Staff"
                               onClick={() => handleDelete(member._id)}
                             >
                               <i className="fas fa-trash"></i>
