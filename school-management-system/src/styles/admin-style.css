@@ -98,6 +98,7 @@
     margin-left: 260px;
     background: var(--light-color);
     min-height: 100vh;
+    z-index: auto !important;
 }
 
 /* Top Header */
