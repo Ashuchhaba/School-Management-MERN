@@ -113,9 +113,6 @@ function AdminNoticeBoardPage() {
             <button className="btn btn-primary" onClick={() => openAddModal('notice')}>
                 <i className="fas fa-plus me-2"></i>Post New Notice
             </button>
-            <button className="btn btn-success" onClick={() => openAddModal('news')}>
-                <i className="fas fa-plus me-2"></i>Post New News
-            </button>
         </div>
       </div>
 
