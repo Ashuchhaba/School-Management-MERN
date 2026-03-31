@@ -70,7 +70,7 @@ const StudentFeesReport = () => {
   const exportToPDF = () => {
     const doc = new jsPDF();
     autoTable(doc, {
-      head: [['Student Name', 'Class', 'Total Fees', 'Paid Amount', 'Pending Amount', 'Payment Status', 'Payment Date']],
+      head: [['Student Name', 'Class', 'Total Fees', 'Paid Amount', 'Due Amount', 'Payment Status', 'Payment Date']],
       body: filteredFees.map((fee) => [
         fee.studentName,
         fee.class,
@@ -78,7 +78,7 @@ const StudentFeesReport = () => {
         fee.paidAmount,
         fee.pendingAmount,
         fee.paymentStatus,
-        new Date(fee.paymentDate).toLocaleDateString(),
+        fee.paymentDate ? new Date(fee.paymentDate).toLocaleDateString() : 'N/A',
       ]),
     });
     doc.save('student-fees-report.pdf');
@@ -120,7 +120,8 @@ const StudentFeesReport = () => {
               >
                 <option value="">All Statuses</option>
                 <option value="Paid">Paid</option>
-                <option value="Pending">Pending</option>
+                <option value="Partially Paid">Partially Paid</option>
+                <option value="Due">Due</option>
               </select>
             </div>
             <div className="col-md-3">
@@ -160,7 +161,7 @@ const StudentFeesReport = () => {
                 <th>Class</th>
                 <th>Total Fees</th>
                 <th>Paid Amount</th>
-                <th>Pending Amount</th>
+                <th>Due Amount</th>
                 <th>Payment Status</th>
                 <th>Payment Date</th>
               </tr>
@@ -174,7 +175,7 @@ const StudentFeesReport = () => {
                   <td>{fee.paidAmount}</td>
                   <td>{fee.pendingAmount}</td>
                   <td>{fee.paymentStatus}</td>
-                  <td>{new Date(fee.paymentDate).toLocaleDateString()}</td>
+                  <td>{fee.paymentDate ? new Date(fee.paymentDate).toLocaleDateString() : 'N/A'}</td>
                 </tr>
               ))}
             </tbody>

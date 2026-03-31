@@ -194,7 +194,29 @@ function FeesManagementPage() {
     });
   };
 
-  const filteredFees = fees.filter((fee) => {
+  const allFeesWithDue = React.useMemo(() => {
+    const list = [...fees];
+    
+    students.forEach(student => {
+      const studentHasPayment = fees.some(fee => fee.student_id && (fee.student_id._id === student._id || fee.student_id === student._id));
+      if (!studentHasPayment) {
+        // Find fee structure for this student's class to show total amount as due
+        const classStructure = feeStructures.find(fs => fs.class === student.class && fs.term === 'Full');
+        list.push({
+          _id: `virtual-${student._id}`,
+          student_id: student,
+          paid_amount: 0,
+          due_amount: classStructure ? classStructure.total_amount : 0,
+          payment_date: null,
+          status: 'Due',
+          is_virtual: true
+        });
+      }
+    });
+    return list;
+  }, [fees, students, feeStructures]);
+
+  const filteredFees = allFeesWithDue.filter((fee) => {
     if (!fee.student_id) {
       return false;
     }
@@ -286,16 +308,18 @@ function FeesManagementPage() {
                             <td>{fee.student_id.class}</td>
                             <td>₹{fee.paid_amount}</td>
                             <td>₹{fee.due_amount}</td>
-                            <td>{new Date(fee.payment_date).toLocaleDateString()}</td>
+                            <td>{fee.payment_date ? new Date(fee.payment_date).toLocaleDateString() : 'N/A'}</td>
                             <td>
                               <span className={`badge ${fee.status === 'Paid' ? 'bg-success' : fee.status === 'Partially Paid' ? 'bg-warning' : 'bg-danger'}`}>
                                 {fee.status}
                               </span>
                             </td>
                             <td>
-                                <button className="btn btn-danger action-btn" onClick={() => handleDelete(fee._id)} title="Delete Fee Record">
-                                  <i className="fas fa-trash"></i>
-                                </button>
+                                {!fee.is_virtual && (
+                                  <button className="btn btn-danger action-btn" onClick={() => handleDelete(fee._id)} title="Delete Fee Record">
+                                    <i className="fas fa-trash"></i>
+                                  </button>
+                                )}
                             </td>
                           </tr>
                         )

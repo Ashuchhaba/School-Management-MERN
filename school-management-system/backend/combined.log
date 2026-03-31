@@ -334,3 +334,15 @@
 {"level":"info","message":"User admin logged in successfully as admin."}
 {"level":"info","message":"User admin logged in successfully as admin."}
 {"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"Create Notice Request. Session ID: Bn-hpY_fGBAHdX8vELVoex-2BH4m4ApY"}
+{"level":"info","message":"User from session: {\"id\":\"69283ab334d3ace4cb5820b8\",\"name\":\"admin\",\"role\":\"admin\"}"}
+{"level":"info","message":"Create Notice Request. Session ID: Bn-hpY_fGBAHdX8vELVoex-2BH4m4ApY"}
+{"level":"info","message":"User from session: {\"id\":\"69283ab334d3ace4cb5820b8\",\"name\":\"admin\",\"role\":\"admin\"}"}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}

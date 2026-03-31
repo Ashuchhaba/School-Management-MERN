@@ -51,31 +51,44 @@ const path = require('path');
 // @access  Private/Admin
 const getStudentFeesReport = async (req, res) => {
   try {
-    const fees = await Fee.find(req.query).populate('student_id');
+    const students = await Student.find(req.query).lean();
+    const fees = await Fee.find().populate('fee_structure_id').lean();
     
-    const formattedFees = fees.map(fee => {
+    const formattedFees = students.map(student => {
         try {
-            // Check if population worked (it should be an object with a name property)
-            let student = fee.student_id;
-            if (!student || !student.name) {
-                 student = { name: 'Unknown', class: 'N/A' };
+            const studentFees = fees.filter(f => f.student_id.toString() === student._id.toString());
+            
+            if (studentFees.length > 0) {
+                // If they have multiple fee records, we should probably return all of them or a summary
+                // The current report seems to expect one entry per record.
+                return studentFees.map(fee => ({
+                    _id: fee._id,
+                    studentName: student.name,
+                    class: student.class,
+                    totalFees: (fee.paid_amount || 0) + (fee.due_amount || 0),
+                    paidAmount: fee.paid_amount || 0,
+                    pendingAmount: fee.due_amount || 0,
+                    paymentStatus: fee.status || 'N/A',
+                    paymentDate: fee.payment_date
+                }));
+            } else {
+                // Return a "Pending" record for students with no payments
+                return [{
+                    _id: `pending-${student._id}`,
+                    studentName: student.name,
+                    class: student.class,
+                    totalFees: 0, // We don't have fee structure here easily, maybe just show 0 or fetch structures
+                    paidAmount: 0,
+                    pendingAmount: 0,
+                    paymentStatus: 'Due',
+                    paymentDate: null
+                }];
             }
-
-            return {
-                _id: fee._id,
-                studentName: student.name,
-                class: student.class,
-                totalFees: (fee.paid_amount || 0) + (fee.due_amount || 0),
-                paidAmount: fee.paid_amount || 0,
-                pendingAmount: fee.due_amount || 0,
-                paymentStatus: fee.status || 'N/A',
-                paymentDate: fee.payment_date
-            };
         } catch (mapErr) {
             fs.appendFileSync(path.join(__dirname, '../debug_error.log'), `Mapping Error: ${mapErr.message}\n`);
             return null;
         }
-    }).filter(f => f !== null); // Remove failed records
+    }).flat().filter(f => f !== null);
 
     res.json(formattedFees);
   } catch (error) {
