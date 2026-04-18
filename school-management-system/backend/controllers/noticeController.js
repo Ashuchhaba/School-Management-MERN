@@ -1,4 +1,5 @@
 const Notice = require('../models/noticeModel');
+const Student = require('../models/studentModel');
 const logger = require('../config/logger');
 
 // @desc    Get all notices
@@ -11,6 +12,44 @@ const getNotices = async (req, res) => {
         if (type) {
             query.type = type;
         }
+
+        // Apply filtering based on user role and class
+        if (req.session.user) {
+            const { role, linkedId } = req.session.user;
+            
+            // Non-admins can only see active notices
+            if (role !== 'admin' && role !== 'Admin') {
+                query.status = 'active';
+            }
+
+            if (role === 'staff') {
+                query.$or = [
+                    { target_audience: 'all' },
+                    { target_audience: 'staff' }
+                ];
+            } else if (role === 'student') {
+                let studentClass = 'all';
+                if (linkedId) {
+                    const student = await Student.findById(linkedId);
+                    if (student) {
+                        studentClass = student.class;
+                    }
+                }
+                
+                query.$or = [
+                    { target_audience: 'all' },
+                    { 
+                        target_audience: 'student',
+                        $or: [
+                            { target_class: 'all' },
+                            { target_class: studentClass }
+                        ]
+                    }
+                ];
+            }
+            // Admin can see everything, so no extra filters
+        }
+
         const notices = await Notice.find(query).sort({ date: -1 });
         res.json(notices);
     } catch (error) {
@@ -24,7 +63,7 @@ const getNotices = async (req, res) => {
 // @access  Public
 const getPublicNews = async (req, res) => {
     try {
-        const news = await Notice.find({ type: 'news' }).sort({ date: -1 }).limit(10);
+        const news = await Notice.find({ type: 'news', status: 'active' }).sort({ date: -1 }).limit(10);
         res.json(news);
     } catch (error) {
         logger.error('Error fetching public news:', error);
@@ -44,13 +83,15 @@ const createNotice = async (req, res) => {
     }
 
     try {
-        const { title, content, target_audience, type } = req.body;
+        const { title, content, target_audience, target_class, type, status } = req.body;
         
         const notice = new Notice({
             title,
             content,
             target_audience: target_audience || 'all',
+            target_class: target_class || 'all',
             type: type || 'notice',
+            status: status || 'active',
             posted_by: req.session.user ? (req.session.user.name || 'Admin') : 'Admin',
             date: new Date()
         });
@@ -68,14 +109,16 @@ const createNotice = async (req, res) => {
 // @access  Private (Admin)
 const updateNotice = async (req, res) => {
     try {
-        const { title, content, target_audience, type } = req.body;
+        const { title, content, target_audience, target_class, type, status } = req.body;
         const notice = await Notice.findById(req.params.id);
 
         if (notice) {
             notice.title = title || notice.title;
             notice.content = content || notice.content;
             notice.target_audience = target_audience || notice.target_audience;
+            notice.target_class = target_class || notice.target_class;
             notice.type = type || notice.type;
+            notice.status = status || notice.status;
 
             const updatedNotice = await notice.save();
             res.json(updatedNotice);

@@ -6,6 +6,7 @@ import Portal from '../components/Portal';
 
 function AdminNoticeBoardPage() {
   const [notices, setNotices] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentNotice, setCurrentNotice] = useState(null); // For edit
@@ -17,11 +18,14 @@ function AdminNoticeBoardPage() {
     title: '',
     content: '',
     target_audience: 'all',
-    type: 'notice'
+    target_class: 'all',
+    type: 'notice',
+    status: 'active'
   });
 
   useEffect(() => {
     fetchNotices();
+    fetchClasses();
   }, []);
 
   const fetchNotices = async () => {
@@ -37,13 +41,30 @@ function AdminNoticeBoardPage() {
     }
   };
 
+  const fetchClasses = async () => {
+    try {
+      const res = await api.get('/api/students/count-by-class');
+      setClasses(res.data.map(c => c._id));
+    } catch (err) {
+      console.error('Failed to fetch classes:', err);
+    }
+  };
+
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => {
+        const newData = { ...prev, [name]: value };
+        // Reset target_class if audience is not student
+        if (name === 'target_audience' && value !== 'student') {
+            newData.target_class = 'all';
+        }
+        return newData;
+    });
   };
 
   const openAddModal = (type = 'notice') => {
     setCurrentNotice(null);
-    setFormData({ title: '', content: '', target_audience: 'all', type });
+    setFormData({ title: '', content: '', target_audience: 'all', target_class: 'all', type, status: 'active' });
     setIsModalOpen(true);
   };
 
@@ -53,7 +74,9 @@ function AdminNoticeBoardPage() {
       title: notice.title,
       content: notice.content,
       target_audience: notice.target_audience || 'all',
-      type: notice.type || 'notice'
+      target_class: notice.target_class || 'all',
+      type: notice.type || 'notice',
+      status: notice.status || 'active'
     });
     setIsModalOpen(true);
   };
@@ -129,6 +152,7 @@ function AdminNoticeBoardPage() {
                     <th>Title</th>
                     <th>Content</th>
                     <th>Audience</th>
+                    <th>Status</th>
                     <th>Posted By</th>
                     <th>Date</th>
                     <th>Actions</th>
@@ -149,17 +173,25 @@ function AdminNoticeBoardPage() {
                       <td>
                         <span className={`badge bg-${notice.target_audience === 'all' ? 'info' : notice.target_audience === 'staff' ? 'warning' : 'success'}`}>
                           {notice.target_audience ? notice.target_audience.toUpperCase() : 'ALL'}
+                          {notice.target_audience === 'student' && notice.target_class !== 'all' && ` (${notice.target_class})`}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`badge bg-${notice.status === 'active' ? 'success' : 'danger'}`}>
+                          {(notice.status || 'active').toUpperCase()}
                         </span>
                       </td>
                       <td>{notice.posted_by}</td>
                       <td>{new Date(notice.date).toLocaleDateString()}</td>
                       <td>
-                        <button className="btn btn-warning action-btn" onClick={() => openEditModal(notice)} title="Edit">
-                          <i className="fas fa-edit"></i>
-                        </button>
-                        <button className="btn btn-danger action-btn" onClick={() => handleDelete(notice._id)} title="Delete">
-                          <i className="fas fa-trash"></i>
-                        </button>
+                        <div className="d-flex gap-2">
+                          <button className="btn btn-warning action-btn" onClick={() => openEditModal(notice)} title="Edit">
+                            <i className="fas fa-edit"></i>
+                          </button>
+                          <button className="btn btn-danger action-btn" onClick={() => handleDelete(notice._id)} title="Delete">
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -226,6 +258,40 @@ function AdminNoticeBoardPage() {
                         </select>
                         </div>
                     )}
+                    {formData.type === 'notice' && formData.target_audience === 'student' && (
+                        <div className="mb-3">
+                            <label className="form-label">Target Class</label>
+                            <select
+                                className="form-select"
+                                name="target_class"
+                                value={formData.target_class}
+                                onChange={handleInputChange}
+                            >
+                                <option value="all">All Classes</option>
+                                {classes.map((cls) => (
+                                    <option key={cls} value={cls}>{cls}</option>
+                                ))}
+                            </select>
+                            {classes.length === 0 && (
+                                <div className="form-text text-warning small">
+                                    <i className="fas fa-exclamation-triangle me-1"></i>
+                                    No students found. Enroll students to see classes here.
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    <div className="mb-3">
+                      <label className="form-label">Status</label>
+                      <select
+                        className="form-select"
+                        name="status"
+                        value={formData.status}
+                        onChange={handleInputChange}
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
                     <div className="mb-3">
                       <label className="form-label">Content</label>
                       <textarea

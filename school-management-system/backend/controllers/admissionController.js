@@ -67,6 +67,10 @@ const createAdmission = async (req, res) => {
     res.json(admission);
   } catch (err) {
     console.error(err.message);
+    if (err.name === 'ValidationError') {
+        const messages = Object.values(err.errors).map((val) => val.message);
+        return res.status(400).json({ message: messages.join(', ') });
+    }
     res.status(500).send('Server Error');
   }
 };
@@ -111,12 +115,16 @@ const updateAdmission = async (req, res) => {
     admission = await Admissions.findByIdAndUpdate(
       req.params.id,
       { $set: admissionFields },
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     res.json(admission);
   } catch (err) {
     console.error(err.message);
+    if (err.name === 'ValidationError') {
+        const messages = Object.values(err.errors).map((val) => val.message);
+        return res.status(400).json({ message: messages.join(', ') });
+    }
     res.status(500).send('Server Error');
   }
 };
@@ -184,6 +192,10 @@ const approveAdmission = async (req, res) => {
     res.json({ msg: 'Admission approved and student created successfully' });
   } catch (err) {
     console.error(err.message);
+    if (err.name === 'ValidationError') {
+        const messages = Object.values(err.errors).map((val) => val.message);
+        return res.status(400).json({ message: messages.join(', ') });
+    }
     res.status(500).send('Server Error');
   }
 };

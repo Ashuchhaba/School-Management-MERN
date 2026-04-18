@@ -116,6 +116,22 @@ function AdmissionsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validation
+    const newErrors = {};
+    if (formData.contact_no1 && !/^\d{10}$/.test(formData.contact_no1)) {
+      newErrors.contact_no1 = 'Contact number must be exactly 10 digits';
+    }
+    if (formData.contact_no2 && !/^\d{10}$/.test(formData.contact_no2)) {
+      newErrors.contact_no2 = 'Contact number must be exactly 10 digits';
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      showPopup('Please fix the errors before submitting.');
+      return;
+    }
+
     try {
       handleCloseModal();
       if (isEdit) {
@@ -437,7 +453,7 @@ function AdmissionsPage() {
                       <div className="form-floating">
                         <input
                           type="tel"
-                          className="form-control"
+                          className={`form-control ${errors.contact_no1 ? 'is-invalid' : ''}`}
                           id="contactNo1"
                           name="contact_no1"
                           placeholder="Contact Number 1"
@@ -446,13 +462,14 @@ function AdmissionsPage() {
                           required
                         />
                         <label htmlFor="contactNo1">Contact Number 1 *</label>
+                        {errors.contact_no1 && <div className="invalid-feedback">{errors.contact_no1}</div>}
                       </div>
                     </div>
                     <div className="col-md-4">
                       <div className="form-floating">
                         <input
                           type="tel"
-                          className="form-control"
+                          className={`form-control ${errors.contact_no2 ? 'is-invalid' : ''}`}
                           id="contactNo2"
                           name="contact_no2"
                           placeholder="Contact Number 2"
@@ -460,6 +477,7 @@ function AdmissionsPage() {
                           onChange={handleFormChange}
                         />
                         <label htmlFor="contactNo2">Contact Number 2</label>
+                        {errors.contact_no2 && <div className="invalid-feedback">{errors.contact_no2}</div>}
                       </div>
                     </div>
                     <div className="col-md-4">

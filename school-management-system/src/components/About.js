@@ -42,7 +42,7 @@ function About() {
           <div className="about-features">
             <div className="feature-item">
               <i className="fas fa-check-circle text-success me-2"></i>
-              <span>CBSE Affiliated</span>
+              <span>GSEB Affiliated</span>
             </div>
             <div className="feature-item">
               <i className="fas fa-check-circle text-success me-2"></i>

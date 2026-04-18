@@ -102,7 +102,29 @@ function FeesManagementPage() {
     if (!paymentData.student_id) newErrors.student_id = '*pls select detail';
     if (!paymentData.fee_structure_id) newErrors.fee_structure_id = '*pls select detail';
     if (!paymentData.payment_date) newErrors.payment_date = '*pls enter detail';
-    if (!paymentData.paid_amount) newErrors.paid_amount = '*pls enter detail';
+    
+    const amount = parseFloat(paymentData.paid_amount);
+    if (!paymentData.paid_amount || isNaN(amount) || amount <= 0) {
+      newErrors.paid_amount = '*pls enter valid amount';
+    } else if (paymentData.fee_structure_id) {
+      // Find the fee structure to get total amount
+      const fs = feeStructures.find(f => f._id === paymentData.fee_structure_id);
+      if (fs) {
+        // Find existing payment for this student and structure
+        const existingFee = fees.find(f => 
+          f.student_id && 
+          (f.student_id._id === paymentData.student_id || f.student_id === paymentData.student_id) && 
+          (f.fee_structure_id && (f.fee_structure_id._id === fs._id || f.fee_structure_id === fs._id))
+        );
+        
+        const totalPaid = existingFee ? existingFee.paid_amount : 0;
+        const remaining = fs.total_amount - totalPaid;
+        
+        if (amount > remaining) {
+          newErrors.paid_amount = `*max pay ₹${remaining}`;
+        }
+      }
+    }
     return newErrors;
   };
 
@@ -221,8 +243,10 @@ function FeesManagementPage() {
       return false;
     }
     const studentName = fee.student_id.name;
+    const studentGR = fee.student_id.gr_no || '';
     return (
-      studentName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (studentName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+       studentGR.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (filterClass === '' || fee.student_id.class === filterClass) &&
       (filterStatus === '' || fee.status === filterStatus)
     );
@@ -257,7 +281,7 @@ function FeesManagementPage() {
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="Search students..."
+                        placeholder="Search students or GR number..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
@@ -304,7 +328,7 @@ function FeesManagementPage() {
                       {filteredFees.map((fee) => (
                         fee.student_id && (
                           <tr key={fee._id}>
-                            <td>{fee.student_id.name}</td>
+                            <td>{fee.student_id.name} (GR: {fee.student_id.gr_no})</td>
                             <td>{fee.student_id.class}</td>
                             <td>₹{fee.paid_amount}</td>
                             <td>₹{fee.due_amount}</td>
@@ -355,7 +379,7 @@ function FeesManagementPage() {
                     <option value="">Select Student</option>
                     {filteredStudents.map((student) => (
                       <option key={student._id} value={student._id}>
-                        {student.name}
+                        {student.name} (GR: {student.gr_no})
                       </option>
                     ))}
                   </select>
@@ -366,11 +390,20 @@ function FeesManagementPage() {
                   <label className="form-label">Fee Structure *</label>
                   <select className={`form-select ${errors.fee_structure_id ? 'is-invalid' : ''}`} name="fee_structure_id" value={paymentData.fee_structure_id} onChange={handlePaymentChange} disabled={!selectedClass}>
                     <option value="">Select Fee Structure</option>
-                    {filteredFeeStructures.map((fs) => (
-                      <option key={fs._id} value={fs._id}>
-                        {fs.class} - {fs.term} (₹{fs.total_amount})
-                      </option>
-                    ))}
+                    {filteredFeeStructures.map((fs) => {
+                      const existingFee = fees.find(f => 
+                        f.student_id && 
+                        (f.student_id._id === paymentData.student_id || f.student_id === paymentData.student_id) && 
+                        (f.fee_structure_id && (f.fee_structure_id._id === fs._id || f.fee_structure_id === fs._id))
+                      );
+                      const totalPaid = existingFee ? existingFee.paid_amount : 0;
+                      const remaining = fs.total_amount - totalPaid;
+                      return (
+                        <option key={fs._id} value={fs._id}>
+                          {fs.class} - {fs.term} (Total: ₹{fs.total_amount}, Remaining: ₹{remaining})
+                        </option>
+                      );
+                    })}
                   </select>
                   {errors.fee_structure_id && <div className="invalid-feedback">{errors.fee_structure_id}</div>}
                 </div>

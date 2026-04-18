@@ -60,8 +60,16 @@ function StaffDetailsPage() {
     if (!newStaffData.gender) newErrors.gender = '*pls select detail';
     if (!newStaffData.qualification) newErrors.qualification = '*pls enter detail';
     if (!newStaffData.date_of_join) newErrors.date_of_join = '*pls enter detail';
-    if (!newStaffData.mobile_no) newErrors.mobile_no = '*pls enter detail';
-    if (!newStaffData.email) newErrors.email = '*pls enter detail';
+    if (!newStaffData.mobile_no) {
+      newErrors.mobile_no = '*pls enter detail';
+    } else if (!/^\d{10}$/.test(newStaffData.mobile_no)) {
+      newErrors.mobile_no = 'Must be exactly 10 digits';
+    }
+    if (!newStaffData.email) {
+      newErrors.email = '*pls enter detail';
+    } else if (!/^\S+@\S+\.\S+$/.test(newStaffData.email)) {
+      newErrors.email = 'Please provide a valid email address';
+    }
     if (!newStaffData.address) newErrors.address = '*pls enter detail';
     return newErrors;
   };

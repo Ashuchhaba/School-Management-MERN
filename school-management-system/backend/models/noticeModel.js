@@ -22,10 +22,19 @@ const noticeSchema = new mongoose.Schema({
     enum: ['all', 'staff', 'student'],
     default: 'all',
   },
+  target_class: {
+    type: String, // e.g., '10A', '12B', or 'all'
+    default: 'all',
+  },
   type: {
     type: String,
     enum: ['notice', 'news'],
     default: 'notice',
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'active',
   },
   created_at: {
     type: Date,

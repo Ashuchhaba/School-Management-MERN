@@ -57,9 +57,11 @@ const studentSchema = new mongoose.Schema({
   mobile_no1: {
     type: String,
     required: true,
+    match: [/^\d{10}$/, 'Mobile number must be exactly 10 digits'],
   },
   mobile_no2: {
     type: String,
+    match: [/^\d{10}$/, 'Mobile number must be exactly 10 digits'],
   },
   address: {
     type: String,

@@ -2,18 +2,40 @@ import React, { useState, useEffect } from 'react';
 
 function EditStaffModal({ staff, onSave, onClose }) {
   const [formData, setFormData] = useState({ ...staff });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setFormData({ ...staff });
+    setErrors({});
   }, [staff]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (formData.mobile_no && !/^\d{10}$/.test(formData.mobile_no)) {
+      newErrors.mobile_no = 'Must be exactly 10 digits';
+    }
+    if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = 'Please provide a valid email address';
+    }
+    return newErrors;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      onSave(formData);
+    }
   };
 
   if (!staff) {
@@ -29,7 +51,7 @@ function EditStaffModal({ staff, onSave, onClose }) {
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <div className="row">
                 <div className="col-md-6">
                   <div className="mb-3">
@@ -80,13 +102,27 @@ function EditStaffModal({ staff, onSave, onClose }) {
                 <div className="col-md-6">
                   <div className="mb-3">
                     <label className="form-label">Mobile No</label>
-                    <input type="text" className="form-control" name="mobile_no" value={formData.mobile_no} onChange={handleChange} />
+                    <input 
+                      type="text" 
+                      className={`form-control ${errors.mobile_no ? 'is-invalid' : ''}`}
+                      name="mobile_no" 
+                      value={formData.mobile_no} 
+                      onChange={handleChange} 
+                    />
+                    {errors.mobile_no && <div className="invalid-feedback">{errors.mobile_no}</div>}
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
                     <label className="form-label">Email</label>
-                    <input type="email" className="form-control" name="email" value={formData.email} onChange={handleChange} />
+                    <input 
+                      type="email" 
+                      className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                      name="email" 
+                      value={formData.email} 
+                      onChange={handleChange} 
+                    />
+                    {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                   </div>
                 </div>
               </div>

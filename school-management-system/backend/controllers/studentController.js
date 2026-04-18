@@ -143,6 +143,10 @@ const createStudent = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    if (error.name === 'ValidationError') {
+        const messages = Object.values(error.errors).map((val) => val.message);
+        return res.status(400).json({ message: messages.join(', ') });
+    }
     if (error.code === 11000) {
         res.status(400).json({ message: 'Duplicate Admission No or other unique field.' });
     } else {
@@ -185,6 +189,10 @@ const updateStudent = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
+    if (error.name === 'ValidationError') {
+        const messages = Object.values(error.errors).map((val) => val.message);
+        return res.status(400).json({ message: messages.join(', ') });
+    }
     res.status(500).json({ message: 'Server Error' });
   }
 };
@@ -216,6 +224,9 @@ const deleteStudent = async (req, res) => {
 const getStudentCountByClass = async (req, res) => {
   try {
     const studentCountByClass = await Student.aggregate([
+      {
+        $match: { class: { $ne: null, $ne: '' } }
+      },
       {
         $group: {
           _id: '$class',
@@ -287,6 +298,10 @@ const approveAdmission = async (req, res) => {
     res.json({ msg: 'Admission approved and student created successfully' });
   } catch (err) {
     console.error(err.message);
+    if (err.name === 'ValidationError') {
+        const messages = Object.values(err.errors).map((val) => val.message);
+        return res.status(400).json({ message: messages.join(', ') });
+    }
     res.status(500).send('Server Error');
   }
 };

@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
     sparse: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
   },
   referenceId: {
     type: mongoose.Schema.Types.ObjectId,

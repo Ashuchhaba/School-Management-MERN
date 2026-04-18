@@ -26,6 +26,12 @@ function EditStudentModal({ student, onSave, onClose }) {
     if (!formData.udise_no) {
       newErrors.udise_no = '*pls enter detail';
     }
+    if (formData.mobile_no1 && !/^\d{10}$/.test(formData.mobile_no1)) {
+      newErrors.mobile_no1 = 'Must be exactly 10 digits';
+    }
+    if (formData.mobile_no2 && !/^\d{10}$/.test(formData.mobile_no2)) {
+      newErrors.mobile_no2 = 'Must be exactly 10 digits';
+    }
     // Add other validations here if needed
     return newErrors;
   };
@@ -164,13 +170,28 @@ function EditStudentModal({ student, onSave, onClose }) {
                 <div className="col-md-6">
                   <div className="mb-3">
                     <label className="form-label">Mobile No 1</label>
-                    <input type="text" className="form-control" name="mobile_no1" value={formData.mobile_no1} onChange={handleChange} required/>
+                    <input 
+                      type="text" 
+                      className={`form-control ${errors.mobile_no1 ? 'is-invalid' : ''}`}
+                      name="mobile_no1" 
+                      value={formData.mobile_no1} 
+                      onChange={handleChange} 
+                      required
+                    />
+                    {errors.mobile_no1 && <div className="invalid-feedback">{errors.mobile_no1}</div>}
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
                     <label className="form-label">Mobile No 2</label>
-                    <input type="text" className="form-control" name="mobile_no2" value={formData.mobile_no2} onChange={handleChange} />
+                    <input 
+                      type="text" 
+                      className={`form-control ${errors.mobile_no2 ? 'is-invalid' : ''}`}
+                      name="mobile_no2" 
+                      value={formData.mobile_no2} 
+                      onChange={handleChange} 
+                    />
+                    {errors.mobile_no2 && <div className="invalid-feedback">{errors.mobile_no2}</div>}
                   </div>
                 </div>
               </div>

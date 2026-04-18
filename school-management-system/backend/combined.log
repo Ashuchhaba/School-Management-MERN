@@ -346,3 +346,115 @@
 {"level":"info","message":"User undefined logged out successfully."}
 {"level":"info","message":"User admin logged in successfully as admin."}
 {"level":"info","message":"User undefined logged out successfully."}
+{"beforeHandshake":false,"cause":{"code":"ENOTFOUND","errno":-3008,"hostname":"ac-j6mgkky-shard-00-01.2gw00v7.mongodb.net","syscall":"getaddrinfo"},"connectionGeneration":8,"errorLabelSet":{},"level":"error","message":"Error fetching public news: getaddrinfo ENOTFOUND ac-j6mgkky-shard-00-01.2gw00v7.mongodb.net","stack":"MongoNetworkError: getaddrinfo ENOTFOUND ac-j6mgkky-shard-00-01.2gw00v7.mongodb.net\n    at TLSSocket.<anonymous> (C:\\MERN_FINAL_PROJECT\\school-management-system\\node_modules\\mongodb\\lib\\cmap\\connect.js:286:44)\n    at Object.onceWrapper (node:events:633:26)\n    at TLSSocket.emit (node:events:518:28)\n    at emitErrorNT (node:internal/streams/destroy:170:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:129:3)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)"}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: 12042"}
+{"level":"warn","message":"Failed login attempt for identifier: 12042"}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-03"}
+{"level":"info","message":"Date Range: 2026-03-01T00:00:00.000Z to 2026-03-31T23:59:59.999Z"}
+{"level":"info","message":"Found 0 records."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-03"}
+{"level":"info","message":"Date Range: 2026-03-01T00:00:00.000Z to 2026-03-31T23:59:59.999Z"}
+{"level":"info","message":"Found 0 records."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-03"}
+{"level":"info","message":"Date Range: 2026-03-01T00:00:00.000Z to 2026-03-31T23:59:59.999Z"}
+{"level":"info","message":"Found 3 records."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-03"}
+{"level":"info","message":"Date Range: 2026-03-01T00:00:00.000Z to 2026-03-31T23:59:59.999Z"}
+{"level":"info","message":"Found 3 records."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: pritisingh@gmail.com"}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-03"}
+{"level":"info","message":"Date Range: 2026-03-01T00:00:00.000Z to 2026-03-31T23:59:59.999Z"}
+{"level":"info","message":"Found 3 records."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-03"}
+{"level":"info","message":"Date Range: 2026-03-01T00:00:00.000Z to 2026-03-31T23:59:59.999Z"}
+{"level":"info","message":"Found 3 records."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"warn","message":"Failed login attempt for identifier: admin"}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"Create Notice Request. Session ID: ZudN12L3PfOzs8wWdBWIFuW768SoLrlO"}
+{"level":"info","message":"User from session: {\"id\":\"69283ab334d3ace4cb5820b8\",\"name\":\"admin\",\"role\":\"admin\"}"}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: 12042"}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: admin"}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: admin"}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-04"}
+{"level":"info","message":"Date Range: 2026-04-01T00:00:00.000Z to 2026-04-30T23:59:59.999Z"}
+{"level":"info","message":"Found 1 records."}
+{"level":"info","message":"Fetching attendance for student: 691a9d2b7e6d21af2c03c70b, Month: 2026-04"}
+{"level":"info","message":"Date Range: 2026-04-01T00:00:00.000Z to 2026-04-30T23:59:59.999Z"}
+{"level":"info","message":"Found 1 records."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User pritisingh@gmail.com logged in successfully as staff."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"Create Notice Request. Session ID: ffmfQa1uezm6mJbHtqTIZ1gLZjuM_9bg"}
+{"level":"info","message":"User from session: {\"id\":\"69283ab334d3ace4cb5820b8\",\"name\":\"admin\",\"role\":\"admin\"}"}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"info","message":"User 12042 logged in successfully as student."}
+{"level":"info","message":"User undefined logged out successfully."}
+{"level":"warn","message":"Failed login attempt for identifier: admin"}
+{"level":"info","message":"User admin logged in successfully as admin."}
+{"level":"info","message":"User admin logged in successfully as admin."}

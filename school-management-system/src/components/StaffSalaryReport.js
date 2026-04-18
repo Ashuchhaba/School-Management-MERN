@@ -138,7 +138,7 @@ const StaffSalaryReport = () => {
                   <td>{salary.month}</td>
                   <td>{salary.salaryAmount}</td>
                   <td>{salary.paymentStatus}</td>
-                  <td>{new Date(salary.paymentDate).toLocaleDateString()}</td>
+                  <td>{salary.paymentDate ? new Date(salary.paymentDate).toLocaleDateString() : 'N/A'}</td>
                 </tr>
               ))}
             </tbody>

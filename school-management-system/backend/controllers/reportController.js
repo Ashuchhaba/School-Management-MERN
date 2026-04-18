@@ -53,34 +53,47 @@ const getStudentFeesReport = async (req, res) => {
   try {
     const students = await Student.find(req.query).lean();
     const fees = await Fee.find().populate('fee_structure_id').lean();
+    const FeeStructure = require('../models/feeStructureModel');
+    const structures = await FeeStructure.find({ term: 'Full' }).lean();
     
     const formattedFees = students.map(student => {
         try {
+            // Find full fee structure for this student's class
+            const classStructure = structures.find(s => s.class === student.class);
+            const expectedTotal = classStructure ? classStructure.total_amount : 0;
+
             const studentFees = fees.filter(f => f.student_id.toString() === student._id.toString());
             
             if (studentFees.length > 0) {
-                // If they have multiple fee records, we should probably return all of them or a summary
-                // The current report seems to expect one entry per record.
-                return studentFees.map(fee => ({
-                    _id: fee._id,
-                    studentName: student.name,
-                    class: student.class,
-                    totalFees: (fee.paid_amount || 0) + (fee.due_amount || 0),
-                    paidAmount: fee.paid_amount || 0,
-                    pendingAmount: fee.due_amount || 0,
-                    paymentStatus: fee.status || 'N/A',
-                    paymentDate: fee.payment_date
-                }));
+                return studentFees.map(fee => {
+                    // Use the specific fee structure total if available, otherwise fallback to class expected total
+                    const totalForThisStructure = fee.fee_structure_id ? fee.fee_structure_id.total_amount : expectedTotal;
+                    const paid = fee.paid_amount || 0;
+                    const pending = Math.max(0, totalForThisStructure - paid);
+
+                    return {
+                        _id: fee._id,
+                        studentId: student._id,
+                        studentName: student.name,
+                        class: student.class,
+                        totalFees: totalForThisStructure,
+                        paidAmount: paid,
+                        pendingAmount: pending,
+                        paymentStatus: fee.status || (pending <= 0 ? 'Paid' : (paid > 0 ? 'Partially Paid' : 'Due')),
+                        paymentDate: fee.payment_date
+                    };
+                });
             } else {
                 // Return a "Pending" record for students with no payments
                 return [{
                     _id: `pending-${student._id}`,
+                    studentId: student._id,
                     studentName: student.name,
                     class: student.class,
-                    totalFees: 0, // We don't have fee structure here easily, maybe just show 0 or fetch structures
+                    totalFees: expectedTotal,
                     paidAmount: 0,
-                    pendingAmount: 0,
-                    paymentStatus: 'Due',
+                    pendingAmount: expectedTotal,
+                    paymentStatus: expectedTotal > 0 ? 'Due' : 'N/A',
                     paymentDate: null
                 }];
             }

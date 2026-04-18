@@ -30,11 +30,13 @@ const staffSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    match: [/^\d{10}$/, 'Mobile number must be exactly 10 digits'],
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
   },
   address: {
     type: String,

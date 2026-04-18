@@ -24,9 +24,11 @@ const AdmissionsSchema = new mongoose.Schema({
   contact_no1: {
     type: String,
     required: true,
+    match: [/^\d{10}$/, 'Contact number must be exactly 10 digits'],
   },
   contact_no2: {
     type: String,
+    match: [/^\d{10}$/, 'Contact number must be exactly 10 digits'],
   },
   address: {
     type: String,

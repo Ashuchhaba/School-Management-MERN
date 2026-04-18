@@ -10,7 +10,7 @@ const Student = require('../models/studentModel');
 router.get('/', async (req, res) => {
   try {
     const fees = await Fee.find()
-      .populate('student_id', 'name class')
+      .populate('student_id', 'name class gr_no')
       .populate('fee_structure_id');
     res.json(fees);
   } catch (err) {
@@ -97,6 +97,15 @@ router.post('/', async (req, res) => {
 
     if (fee) {
       // --- UPDATE EXISTING RECORD ---
+      
+      // Validation: Check if payment exceeds total amount
+      if (fee.paid_amount + new_paid_amount > total_amount) {
+        const remaining = total_amount - fee.paid_amount;
+        return res.status(400).json({ 
+          msg: `Overpayment detected. Remaining amount to pay for this structure is ₹${remaining}.` 
+        });
+      }
+
       fee.paid_amount += new_paid_amount;
       fee.due_amount = total_amount - fee.paid_amount;
       fee.payment_date = payment_date;
@@ -119,6 +128,14 @@ router.post('/', async (req, res) => {
 
     } else {
       // --- CREATE NEW RECORD ---
+      
+      // Validation: Check if initial payment exceeds total amount
+      if (new_paid_amount > total_amount) {
+        return res.status(400).json({ 
+          msg: `Initial payment cannot exceed total fee amount (₹${total_amount}).` 
+        });
+      }
+
       const due_amount = total_amount - new_paid_amount;
       let status = 'Partially Paid';
       if (due_amount <= 0) {

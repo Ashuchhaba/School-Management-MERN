@@ -63,7 +63,14 @@ function StudentDetailsPage() {
     if (!newStudentData.roll_no) newErrors.roll_no = '*pls enter detail';
     if (!newStudentData.father_name) newErrors.father_name = '*pls enter detail';
     if (!newStudentData.mother_name) newErrors.mother_name = '*pls enter detail';
-    if (!newStudentData.mobile_no1) newErrors.mobile_no1 = '*pls enter detail';
+    if (!newStudentData.mobile_no1) {
+      newErrors.mobile_no1 = '*pls enter detail';
+    } else if (!/^\d{10}$/.test(newStudentData.mobile_no1)) {
+      newErrors.mobile_no1 = 'Must be exactly 10 digits';
+    }
+    if (newStudentData.mobile_no2 && !/^\d{10}$/.test(newStudentData.mobile_no2)) {
+      newErrors.mobile_no2 = 'Must be exactly 10 digits';
+    }
     if (!newStudentData.address) newErrors.address = '*pls enter detail';
     return newErrors;
   };
@@ -407,7 +414,8 @@ function StudentDetailsPage() {
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Mobile Number 2</label>
-                      <input type="text" className="form-control" name="mobile_no2" value={newStudentData.mobile_no2} onChange={handleNewStudentChange} />
+                      <input type="text" className={`form-control ${errors.mobile_no2 ? 'is-invalid' : ''}`} name="mobile_no2" value={newStudentData.mobile_no2} onChange={handleNewStudentChange} />
+                      {errors.mobile_no2 && <div className="invalid-feedback">{errors.mobile_no2}</div>}
                     </div>
                   </div>
                 </div>

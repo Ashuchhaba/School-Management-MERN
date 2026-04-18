@@ -27,9 +27,9 @@ router.put('/change-password', changePassword);
 // Admin route for resetting student password
 router.put('/reset-password/:id', admin, resetStudentPassword);
 
+router.route('/count-by-class').get(getStudentCountByClass);
 router.route('/').get(getStudents).post(createStudent);
 router.route('/:id').get(getStudentById).put(updateStudent).delete(deleteStudent);
-router.route('/count-by-class').get(getStudentCountByClass);
 router.route('/approve').post(approveAdmission);
 
 module.exports = router;
